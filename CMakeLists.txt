@@ -1,6 +1,10 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.14...3.26)
+set(CMAKE_EXPORT_COMPILE_COMMANDS True)
+
 project(Interpreter)
 
-set(CMAKE_CXX_STANDARD 17)
+add_subdirectory(src)
 
-add_executable(Interpreter main.cpp)
+add_executable(main main.cpp)
+
+target_link_libraries(main PRIVATE includes)
