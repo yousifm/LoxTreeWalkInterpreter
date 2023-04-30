@@ -15,7 +15,5 @@ void runPrompt() {
     
     std::cout << "> ";
     std::getline(std::cin, line);
-    
-    std::cout << line << std::endl;
   }
 }
