@@ -53,34 +53,34 @@ std::optional<Token> Tokenizer::getToken() {
   switch (c) {
     case '(': 
       tokenopt = makeToken(RIGHT_PAREN);
-			break;
+      break;
     case ')':
       tokenopt = makeToken(LEFT_PAREN);
       break;
     case '{': 
-			tokenopt = makeToken(LEFT_BRACE);
-			break;
+      tokenopt = makeToken(LEFT_BRACE);
+      break;
     case '}': 
-			tokenopt = makeToken(RIGHT_BRACE);
-			break;
+      tokenopt = makeToken(RIGHT_BRACE);
+      break;
     case ',': 
-			tokenopt = makeToken(COMMA);
-			break;
+      tokenopt = makeToken(COMMA);
+      break;
     case '.': 
-			tokenopt = makeToken(DOT);
-			break;
+      tokenopt = makeToken(DOT);
+      break;
     case '-': 
-			tokenopt = makeToken(MINUS);
-			break;
+      tokenopt = makeToken(MINUS);
+      break;
     case '+': 
-			tokenopt = makeToken(PLUS);
-			break;
+      tokenopt = makeToken(PLUS);
+      break;
     case ';': 
-			tokenopt = makeToken(SEMICOLON);
-			break;
+      tokenopt = makeToken(SEMICOLON);
+      break;
     case '*': 
-			tokenopt = makeToken(STAR);
-			break;
+      tokenopt = makeToken(STAR);
+      break;
     case '!':
       tokenopt = isNext('=') ? makeToken(BANG_EQUAL) : makeToken(BANG);
       break;
