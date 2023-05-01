@@ -100,6 +100,8 @@ std::optional<Token> Tokenizer::getToken() {
     case '/':
       if(nextIs('/')) {
         while(peek() != '\n' && !isEnd()) next();
+      } else if(nextIs('*')) {
+        handleMultilineComment();
       } else {
         tokenopt = makeToken(SLASH);
       }
@@ -203,4 +205,30 @@ std::optional<Token> Tokenizer::handleIdentifier() {
   }
 
   return makeToken(type);
+}
+
+void Tokenizer::handleMultilineComment() {
+  char next_char = peek();
+  char next_next_char = peekNext();
+  
+  while (next_char != '*' && next_next_char != '/' && !isEnd()) {
+    if (next_char == '\n') _line++;
+
+    next_char = next_next_char;
+    next();
+    next_next_char = peekNext();
+  }
+  
+  // Report error if the end is reached without finding teminating characters
+  if (isEnd()) {
+    error(_line, "Unterminated multline comment");
+  }
+  // Skip the terminating characters
+  else {
+    skip(2);
+  }
+}
+
+void Tokenizer::skip(size_t num) {
+  _current += num;
 }

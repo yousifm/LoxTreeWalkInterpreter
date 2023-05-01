@@ -20,6 +20,8 @@ private:
   std::optional<Token> getToken();
   bool isEnd();
   char next();
+  void skip(size_t);
+
   Token makeToken(TOKEN_TYPE, Token::literal_variant literal_variant = std::monostate());
   bool nextIs(char);
   char peek();
@@ -27,6 +29,7 @@ private:
   std::optional<Token> handleString();
   std::optional<Token> handleNumber();
   std::optional<Token> handleIdentifier();
+  void handleMultilineComment();
 
   std::string _source;
   size_t _start = 0;
