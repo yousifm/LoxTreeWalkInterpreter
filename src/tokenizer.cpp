@@ -45,10 +45,6 @@ std::vector<Token> Tokenizer::getTokens() {
   return tokens;
 }
 
-bool Tokenizer::isEnd() {
-  return _current >= _source.size();
-}
-
 std::optional<Token> Tokenizer::getToken() {
   char c = next();
   
@@ -86,21 +82,21 @@ std::optional<Token> Tokenizer::getToken() {
 			tokenopt = makeToken(STAR);
 			break;
     case '!':
-      tokenopt = nextIs('=') ? makeToken(BANG_EQUAL) : makeToken(BANG);
+      tokenopt = isNext('=') ? makeToken(BANG_EQUAL) : makeToken(BANG);
       break;
     case '=':
-      tokenopt = nextIs('=') ? makeToken(EQUAL_EQUAL) : makeToken(EQUAL);
+      tokenopt = isNext('=') ? makeToken(EQUAL_EQUAL) : makeToken(EQUAL);
       break;
     case '<':
-      tokenopt = nextIs('=') ? makeToken(LESS_EQUAL) : makeToken(LESS);
+      tokenopt = isNext('=') ? makeToken(LESS_EQUAL) : makeToken(LESS);
       break;
     case '>':
-      tokenopt = nextIs('=') ? makeToken(GREATER_EQUAL) : makeToken(GREATER);
+      tokenopt = isNext('=') ? makeToken(GREATER_EQUAL) : makeToken(GREATER);
       break;
     case '/':
-      if(nextIs('/')) {
+      if(isNext('/')) {
         while(peek() != '\n' && !isEnd()) next();
-      } else if(nextIs('*')) {
+      } else if(isNext('*')) {
         handleMultilineComment();
       } else {
         tokenopt = makeToken(SLASH);
@@ -133,21 +129,27 @@ std::optional<Token> Tokenizer::getToken() {
   return tokenopt; 
 }
 
-char Tokenizer::next() {
-  return _source[_current++];
-}
-
 Token Tokenizer::makeToken(TOKEN_TYPE type, Token::literal_variant literal) {
   std::string text = _source.substr(_start, _current - _start);
   return Token{type, text, literal, _line};
 }
 
-bool Tokenizer::nextIs(char expected) {
+
+bool Tokenizer::isEnd() {
+  return _current >= _source.size();
+}
+
+bool Tokenizer::isNext(char expected) {
   if (isEnd()) return false;
   if (_source[_current] != expected) return false;
 
   _current++;
   return true;
+}
+
+
+char Tokenizer::next() {
+  return _source[_current++];
 }
 
 char Tokenizer::peek() {
@@ -160,6 +162,11 @@ char Tokenizer::peekNext() {
 
   return _source[_current + 1];
 }
+
+void Tokenizer::skip(size_t num) {
+  _current += num;
+}
+
 
 std::optional<Token> Tokenizer::handleString() {
   while (peek() != '"' && !isEnd()) {
@@ -229,6 +236,3 @@ void Tokenizer::handleMultilineComment() {
   }
 }
 
-void Tokenizer::skip(size_t num) {
-  _current += num;
-}
