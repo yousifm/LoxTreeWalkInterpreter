@@ -58,6 +58,9 @@ std::optional<Token> Tokenizer::getToken() {
     case '(': 
       tokenopt = makeToken(RIGHT_PAREN);
 			break;
+    case ')':
+      tokenopt = makeToken(LEFT_PAREN);
+      break;
     case '{': 
 			tokenopt = makeToken(LEFT_BRACE);
 			break;
