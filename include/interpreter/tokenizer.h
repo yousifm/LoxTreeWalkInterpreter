@@ -15,9 +15,9 @@ public:
   Tokenizer(const std::string&);
 
   std::vector<Token> getTokens();
+  
+  static const std::unordered_map<std::string, TOKEN_TYPE> _keywords;
 private:
-  static std::unordered_map<std::string, TOKEN_TYPE> _keywords;
-
   std::optional<Token> getToken();
   Token makeToken(TOKEN_TYPE, Token::literal_variant literal_variant = std::monostate());
   

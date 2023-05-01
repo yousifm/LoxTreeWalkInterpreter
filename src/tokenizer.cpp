@@ -7,7 +7,7 @@
 
 #include <sstream>
 
-std::unordered_map<std::string, TOKEN_TYPE> Tokenizer::_keywords = {
+const std::unordered_map<std::string, TOKEN_TYPE> Tokenizer::_keywords = {
   {"and",    AND},
   {"class",  CLASS},
   {"else",   ELSE},
