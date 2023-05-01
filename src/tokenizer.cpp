@@ -188,7 +188,7 @@ std::optional<Token> Tokenizer::handleNumber() {
   
   std::string substring = _source.substr(_start, _current - _start);
 
-  return makeToken(NUMBER, std::stod(_source.substr(_start, _current - _start)));
+  return makeToken(NUMBER, substring);
 }
 
 std::optional<Token> Tokenizer::handleIdentifier() {
@@ -202,5 +202,5 @@ std::optional<Token> Tokenizer::handleIdentifier() {
     type = _keywords.at(substring);
   }
 
-  return makeToken(type, substring);
+  return makeToken(type);
 }
