@@ -20,7 +20,7 @@ private:
   std::optional<Token> getToken();
   bool isEnd();
   char next();
-  Token makeToken(TOKEN_TYPE, literal_variant literal_variant = std::monostate());
+  Token makeToken(TOKEN_TYPE, Token::literal_variant literal_variant = std::monostate());
   bool nextIs(char);
   char peek();
   char peekNext();

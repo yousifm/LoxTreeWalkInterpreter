@@ -132,7 +132,7 @@ char Tokenizer::next() {
   return _source[_current++];
 }
 
-Token Tokenizer::makeToken(TOKEN_TYPE type, literal_variant literal) {
+Token Tokenizer::makeToken(TOKEN_TYPE type, Token::literal_variant literal) {
   std::string text = _source.substr(_start, _current - _start);
   return Token{type, text, literal, _line};
 }

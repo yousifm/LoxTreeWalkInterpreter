@@ -7,10 +7,10 @@
 #include <variant>
 #include <string>
 
-typedef std::variant<std::monostate, std::string, double> literal_variant;
-
 class Token {
 public:
+  typedef std::variant<std::monostate, std::string, double> literal_variant;
+  
   Token(TOKEN_TYPE type, const std::string& lexeme, const literal_variant literal, size_t line);
   friend std::ostream& operator<<(std::ostream&, const Token&);
 private:
