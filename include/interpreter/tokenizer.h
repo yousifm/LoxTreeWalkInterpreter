@@ -24,7 +24,7 @@ private:
   bool isEnd();
   bool isNext(char);
   
-  char next();
+  char advance();
   char peek();
   char peekNext();
   

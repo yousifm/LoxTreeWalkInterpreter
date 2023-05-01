@@ -46,7 +46,7 @@ std::vector<Token> Tokenizer::getTokens() {
 }
 
 std::optional<Token> Tokenizer::getToken() {
-  char c = next();
+  char c = advance();
   
   std::optional<Token> tokenopt = std::nullopt;
 
@@ -95,7 +95,7 @@ std::optional<Token> Tokenizer::getToken() {
       break;
     case '/':
       if(isNext('/')) {
-        while(peek() != '\n' && !isEnd()) next();
+        while(peek() != '\n' && !isEnd()) advance();
       } else if(isNext('*')) {
         handleMultilineComment();
       } else {
@@ -148,7 +148,7 @@ bool Tokenizer::isNext(char expected) {
 }
 
 
-char Tokenizer::next() {
+char Tokenizer::advance() {
   return _source[_current++];
 }
 
@@ -171,7 +171,7 @@ void Tokenizer::skip(size_t num) {
 std::optional<Token> Tokenizer::handleString() {
   while (peek() != '"' && !isEnd()) {
     if (peek() == '\n') _line++;
-    next();
+    advance();
   }
 
   if (isEnd()) {
@@ -179,7 +179,7 @@ std::optional<Token> Tokenizer::handleString() {
     return std::nullopt;
   }
   
-  next();
+  advance();
 
   std::string literal = _source.substr(_start + 1, _current - _start - 2);
 
@@ -187,12 +187,12 @@ std::optional<Token> Tokenizer::handleString() {
 }
 
 std::optional<Token> Tokenizer::handleNumber() {
-  while (isdigit(peek())) next();
+  while (isdigit(peek())) advance();
 
   if (peek() == '.' && isdigit(peekNext())) {
-    next();
+    advance();
 
-    while (isdigit(peek())) next();
+    while (isdigit(peek())) advance();
   }
   
   std::string substring = _source.substr(_start, _current - _start);
@@ -201,7 +201,7 @@ std::optional<Token> Tokenizer::handleNumber() {
 }
 
 std::optional<Token> Tokenizer::handleIdentifier() {
-  while (isalpha(peek())) next();
+  while (isalpha(peek())) advance();
   
   std::string substring = _source.substr(_start, _current - _start);
   
@@ -222,7 +222,7 @@ void Tokenizer::handleMultilineComment() {
     if (next_char == '\n') _line++;
 
     next_char = next_next_char;
-    next();
+    advance();
     next_next_char = peekNext();
   }
   
