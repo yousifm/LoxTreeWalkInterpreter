@@ -14,6 +14,8 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(googletest)
 
+enable_testing()
+
 add_subdirectory(interpreter)
 add_subdirectory(tokenizer)
 add_subdirectory(expression)

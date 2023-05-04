@@ -13,8 +13,6 @@ target_link_libraries(tokenizer
   PUBLIC interpreter
 )
 
-enable_testing()
-
 add_executable(
   tokenizer_test
   test/test.cpp
