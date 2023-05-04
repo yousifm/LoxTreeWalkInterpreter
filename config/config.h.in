@@ -1,0 +1,8 @@
+#ifndef __CONFIG_H__
+#define __CONFIG_H__
+
+namespace config {
+  static auto constexpr TEST_RESOURCE_PATH = "@TEST_RESOURCE_PATH@";
+}
+
+#endif // !__CONFIG_H__
