@@ -21,6 +21,8 @@ add_executable(
 target_link_libraries(
   tokenizer_test
   tokenizer
+  config
+  util
   GTest::gtest_main
 )
 

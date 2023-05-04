@@ -4,6 +4,12 @@
 #include <iostream>
 #include <variant>
 
+Token::Token(TOKEN_TYPE type, const std::string& lexeme)
+  : _type(type), _lexeme(lexeme), _literal(std::monostate()), _line(0) {}
+
+Token::Token(TOKEN_TYPE type, const std::string& lexeme, literal_variant literal)
+: _type(type), _lexeme(lexeme), _literal(literal), _line(0) {}
+
 Token::Token(TOKEN_TYPE type, const std::string& lexeme, literal_variant literal, size_t line)
   : _type(type), _lexeme(lexeme), _literal(literal), _line(line) {}
 

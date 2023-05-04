@@ -11,8 +11,10 @@ class Token {
 public:
   typedef std::variant<std::monostate, std::string, double> literal_variant;
   
-  Token(TOKEN_TYPE type, const std::string& lexeme, const literal_variant literal, size_t line);
-  
+  Token(TOKEN_TYPE, const std::string&);
+  Token(TOKEN_TYPE, const std::string&, const literal_variant);
+  Token(TOKEN_TYPE, const std::string&, const literal_variant, size_t);
+
   bool operator==(const Token&) const;
   friend std::ostream& operator<<(std::ostream&, const Token&);
 private:
