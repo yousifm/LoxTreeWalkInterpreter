@@ -40,14 +40,14 @@ if __name__ == '__main__':
     args = sys.argv
 
     if len(args) != 2:
-        print("Usage: generate_ast.py <output dir>")
+        print('Usage: generate_ast.py <output dir>')
         exit(64);
 
     outputDir = args[1]
     
-    defineAst(outputDir, "Expr", [
-        "Binary   : Expr& left, Token op, Expr& right",
-        "Grouping : Expr& expression",
-        "Literal  : Token::literal_variant value",
-        "Unary    : Token op, Expr& right"
+    defineAst(outputDir, 'Expr', [
+        'Binary   : Expr& left, Token op, Expr& right',
+        'Grouping : Expr& expression',
+        'Literal  : Token::literal_variant value',
+        'Unary    : Token op, Expr& right'
     ]);
