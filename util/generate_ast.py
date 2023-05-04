@@ -11,9 +11,6 @@ def defineAst(outputDir, basename, types):
         path = outputDir + '/' + classname.lower() + '.h'
         defineType(path, basename, classname, fields)
 
-def swapTuple(t):
-    return (t[1], t[0])
-
 def defineType(path, basename, classname, fields):
     field_map = OrderedDict(map(swapTuple, map(str.split, fields)))
     private_field_map = OrderedDict({'_' + name: type for name, type in field_map.items()})
@@ -34,6 +31,10 @@ def defineType(path, basename, classname, fields):
             '}'
         ]
         f.writelines(lines)
+
+def swapTuple(t):
+    return (t[1], t[0])
+
 
 if __name__ == '__main__':
     args = sys.argv
