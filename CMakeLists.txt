@@ -6,8 +6,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS True)
 
 project(Interpreter)
 
-add_subdirectory(src)
+add_subdirectory(interpreter)
+add_subdirectory(tokenizer)
+add_subdirectory(expression)
+add_subdirectory(util)
 
-add_executable(Interpreter main.cpp)
+add_executable(Interpreter src/main.cpp)
 
-target_link_libraries(Interpreter PRIVATE includes)
+target_link_libraries(Interpreter PRIVATE interpreter)
+set_target_properties(Interpreter PROPERTIES LINKER_LANGUAGE CXX)
