@@ -22,7 +22,7 @@ private:
   Token makeToken(TOKEN_TYPE, Token::literal_variant literal_variant = std::monostate());
   
   bool isEnd();
-  bool isNext(char);
+  bool advanceIfMatch(char);
   
   char advance();
   char peek();
