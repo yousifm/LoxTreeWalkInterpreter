@@ -82,21 +82,21 @@ std::optional<Token> Tokenizer::getToken() {
       tokenopt = makeToken(STAR);
       break;
     case '!':
-      tokenopt = isNext('=') ? makeToken(BANG_EQUAL) : makeToken(BANG);
+      tokenopt = advanceIfMatch('=') ? makeToken(BANG_EQUAL) : makeToken(BANG);
       break;
     case '=':
-      tokenopt = isNext('=') ? makeToken(EQUAL_EQUAL) : makeToken(EQUAL);
+      tokenopt = advanceIfMatch('=') ? makeToken(EQUAL_EQUAL) : makeToken(EQUAL);
       break;
     case '<':
-      tokenopt = isNext('=') ? makeToken(LESS_EQUAL) : makeToken(LESS);
+      tokenopt = advanceIfMatch('=') ? makeToken(LESS_EQUAL) : makeToken(LESS);
       break;
     case '>':
-      tokenopt = isNext('=') ? makeToken(GREATER_EQUAL) : makeToken(GREATER);
+      tokenopt = advanceIfMatch('=') ? makeToken(GREATER_EQUAL) : makeToken(GREATER);
       break;
     case '/':
-      if(isNext('/')) {
+      if(advanceIfMatch('/')) {
         while(peek() != '\n' && !isEnd()) advance();
-      } else if(isNext('*')) {
+      } else if(advanceIfMatch('*')) {
         handleMultilineComment();
       } else {
         tokenopt = makeToken(SLASH);
@@ -139,9 +139,11 @@ bool Tokenizer::isEnd() {
   return _current >= _source.size();
 }
 
-bool Tokenizer::isNext(char expected) {
+bool Tokenizer::advanceIfMatch(char expected) {
   if (isEnd()) return false;
-  if (_source[_current + 1] != expected) return false;
+  if (_source[_current] != expected) return false;
+
+  _current++;
 
   return true;
 }
