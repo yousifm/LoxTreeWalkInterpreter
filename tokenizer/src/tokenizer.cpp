@@ -52,10 +52,10 @@ std::optional<Token> Tokenizer::getToken() {
 
   switch (c) {
     case '(': 
-      tokenopt = makeToken(RIGHT_PAREN);
+      tokenopt = makeToken(LEFT_PAREN);
       break;
     case ')':
-      tokenopt = makeToken(LEFT_PAREN);
+      tokenopt = makeToken(RIGHT_PAREN);
       break;
     case '{': 
       tokenopt = makeToken(LEFT_BRACE);
@@ -197,8 +197,9 @@ std::optional<Token> Tokenizer::handleNumber() {
   }
   
   std::string substring = _source.substr(_start, _current - _start);
+  double literal = std::stod(substring);
 
-  return makeToken(NUMBER, substring);
+  return makeToken(NUMBER, literal);
 }
 
 std::optional<Token> Tokenizer::handleIdentifier() {
