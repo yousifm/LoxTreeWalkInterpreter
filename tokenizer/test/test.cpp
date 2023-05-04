@@ -15,7 +15,5 @@ TEST(TokenizerTest, First) {
     Token{TOKEN_TYPE::END_OF_FILE, "", std::monostate(), 1}
   };
   
-  EXPECT_EQ(tokens[0], expected[0]);
-  EXPECT_EQ(tokens[1], expected[1]);
-  EXPECT_EQ(tokens[2], expected[2]);
+  EXPECT_EQ(tokens, expected);
 }
