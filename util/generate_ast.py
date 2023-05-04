@@ -6,7 +6,7 @@ from collections import OrderedDict
 def defineAst(outputDir, basename, types):
     for type in types:
         classname = type.split(':')[0].strip()
-        fields = type.split(":")[1].strip().split(',');
+        fields = type.split(':')[1].strip().split(',');
         fields = list(map(str.strip, fields))
         path = outputDir + '/' + classname.lower() + '.h'
         defineType(path, basename, classname, fields)
