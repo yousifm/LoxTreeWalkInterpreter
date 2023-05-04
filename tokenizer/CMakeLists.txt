@@ -8,4 +8,23 @@ add_library(
 )
 
 target_include_directories(tokenizer PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_link_libraries(tokenizer PUBLIC interpreter)
+
+target_link_libraries(tokenizer
+  PUBLIC interpreter
+)
+
+enable_testing()
+
+add_executable(
+  tokenizer_test
+  test/test.cpp
+)
+
+target_link_libraries(
+  tokenizer_test
+  tokenizer
+  GTest::gtest_main
+)
+
+include(GoogleTest)
+gtest_discover_tests(tokenizer_test)

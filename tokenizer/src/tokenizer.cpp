@@ -40,7 +40,7 @@ std::vector<Token> Tokenizer::getTokens() {
       tokens.emplace_back(token.value());
   }
   
-  tokens.emplace_back(Token{END_OF_FILE, "", "", _line});
+  tokens.emplace_back(Token{END_OF_FILE, "", std::monostate(), _line});
 
   return tokens;
 }

@@ -7,6 +7,10 @@
 Token::Token(TOKEN_TYPE type, const std::string& lexeme, literal_variant literal, size_t line)
   : _type(type), _lexeme(lexeme), _literal(literal), _line(line) {}
 
+bool Token::operator==(const Token& other) const {
+  return (_type == other._type) && (_lexeme == other._lexeme) && (_literal == other._literal);
+}
+
 struct variant_print {
   std::string operator()(const std::string& x) const {return x;}
   std::string operator()(double x) const { return std::to_string(x);}
