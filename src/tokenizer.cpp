@@ -141,9 +141,8 @@ bool Tokenizer::isEnd() {
 
 bool Tokenizer::isNext(char expected) {
   if (isEnd()) return false;
-  if (_source[_current] != expected) return false;
+  if (_source[_current + 1] != expected) return false;
 
-  _current++;
   return true;
 }
 
@@ -215,17 +214,12 @@ std::optional<Token> Tokenizer::handleIdentifier() {
 }
 
 void Tokenizer::handleMultilineComment() {
-  char next_char = peek();
-  char next_next_char = peekNext();
-  
-  while (next_char != '*' && next_next_char != '/' && !isEnd()) {
-    if (next_char == '\n') _line++;
+  while (!(peek() == '*' && peekNext() == '/') && !isEnd()) {
+    if(peek() == '\n') _line++;
 
-    next_char = next_next_char;
     advance();
-    next_next_char = peekNext();
   }
-  
+
   // Report error if the end is reached without finding teminating characters
   if (isEnd()) {
     error(_line, "Unterminated multline comment");
