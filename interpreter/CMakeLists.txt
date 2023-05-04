@@ -5,5 +5,6 @@ add_library(
 )
 
 target_include_directories(interpreter PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_link_libraries(interpreter PUBLIC util)
-target_link_libraries(interpreter PUBLIC tokenizer)
+target_link_libraries(interpreter
+  PUBLIC util
+  PUBLIC tokenizer)
