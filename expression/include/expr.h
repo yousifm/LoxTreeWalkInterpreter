@@ -1,11 +1,15 @@
+#pragma once
+
 #include <token.h>
+#include <any>
 
 namespace Expr {
 
 class Expr {
 public:
-  Expr(){};
-  virtual ~Expr() = 0;
+  explicit Expr();
+  
+  virtual void accept(ExprVisitor&) const = 0;
 };
 
 }

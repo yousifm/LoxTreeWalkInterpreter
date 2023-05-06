@@ -3,15 +3,15 @@
 import sys
 from collections import OrderedDict
 
-def defineAst(outputDir, basename, types):
+def declareAst(outputDir, basename, types):
     for type in types:
         classname = type.split(':', 1)[0].strip()
         fields = type.split(':', 1)[1].strip().split(',');
         fields = list(map(str.strip, fields))
         path = outputDir + '/' + classname.lower() + '.h'
-        defineType(path, basename, classname, fields)
+        declareType(path, basename, classname, fields)
 
-def defineType(path, basename, classname, fields):
+def declareType(path, basename, classname, fields):
     field_map = OrderedDict(map(swapTuple, map(str.split, fields)))
     private_field_map = OrderedDict({'_' + name: type for name, type in field_map.items()})
     initialization_list = [private_name + '(' + argument_name + ')'
@@ -45,7 +45,7 @@ if __name__ == '__main__':
 
     outputDir = args[1]
     
-    defineAst(outputDir, 'Expr', [
+    declareAst(outputDir, 'Expr', [
         'Binary   : Expr& left, Token op, Expr& right',
         'Grouping : Expr& expression',
         'Literal  : Token::literal_variant value',

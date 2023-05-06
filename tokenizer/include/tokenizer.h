@@ -1,5 +1,4 @@
-#ifndef __TOKENIZER_H__
-#define __TOKENIZER_H__
+#pragma once
 
 #include "token_type.h"
 #include "token.h"
@@ -40,5 +39,3 @@ private:
   size_t _current = 0;
   size_t _line = 1;
 };
-
-#endif

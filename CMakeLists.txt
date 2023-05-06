@@ -26,4 +26,6 @@ add_subdirectory(util)
 add_executable(Interpreter src/main.cpp)
 
 target_link_libraries(Interpreter PRIVATE interpreter)
+target_link_libraries(Interpreter PRIVATE expression)
+
 set_target_properties(Interpreter PROPERTIES LINKER_LANGUAGE CXX)

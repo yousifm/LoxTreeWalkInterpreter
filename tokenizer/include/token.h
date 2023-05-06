@@ -1,5 +1,4 @@
-#ifndef __TOKEN_H__
-#define __TOKEN_H__
+#pragma once
 
 #include "token_type.h"
 
@@ -23,5 +22,3 @@ private:
   literal_variant _literal;
   size_t _line;
 };
-
-#endif

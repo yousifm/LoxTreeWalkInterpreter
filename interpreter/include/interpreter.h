@@ -1,5 +1,4 @@
-#ifndef __INTERPRETER_H__
-#define __INTERPRETER_H__
+#pragma once
 
 #include <string>
 
@@ -11,5 +10,3 @@ void run(const std::string&);
 
 void error(int, const std::string&);
 void report(int, const std::string&, const std::string&);
-
-#endif

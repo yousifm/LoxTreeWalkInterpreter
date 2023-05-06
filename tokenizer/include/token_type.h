@@ -1,5 +1,4 @@
-#ifndef __TOKEN_TYPE_H__
-#define __TOKEN_TYPE_H__
+#pragma once
 
 enum TOKEN_TYPE {
   // Single char
@@ -21,5 +20,3 @@ enum TOKEN_TYPE {
   
   END_OF_FILE
 };
-
-#endif
