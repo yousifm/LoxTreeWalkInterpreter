@@ -1,10 +1,10 @@
 add_library(
   expression
   include/expr.h
-  include/binary.h
-  include/grouping.h
-  include/literal.h
-  include/unary.h
+  src/expr.cpp
+  include/expression_visitor.h
+  include/printer_visitor.h
+  src/printer_visitor.cpp
 )
 
 target_include_directories(expression PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
