@@ -18,12 +18,12 @@ void PrinterVisitor::visitUnary(std::shared_ptr<const Expr::UnaryExpr> expr) {
 
 std::string PrinterVisitor::getOutput() { return _builder.str(); }
 
-std::string PrinterVisitor::print(std::shared_ptr <Expr::Expr> expr) {
+std::string PrinterVisitor::print(const std::shared_ptr <Expr::Expr>& expr) {
     expr->accept(this);
     return getOutput();
 }
 
-void PrinterVisitor::parenthesize(const std::string &name, std::vector<std::shared_ptr<Expr::Expr>> exprs) {
+void PrinterVisitor::parenthesize(const std::string &name, const std::vector<std::shared_ptr<Expr::Expr>>& exprs) {
     _builder << "(" << name;
     for (const auto& expr: exprs) {
         _builder << " ";

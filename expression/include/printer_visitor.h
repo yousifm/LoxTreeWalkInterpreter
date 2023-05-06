@@ -20,10 +20,10 @@ public:
 
   std::string getOutput();
 
-  std::string print(std::shared_ptr<Expr::Expr> expr);
+  std::string print(const std::shared_ptr<Expr::Expr>& expr);
 
 private:
-  void parenthesize(const std::string& name, std::vector<std::shared_ptr<Expr::Expr>> exprs);
+  void parenthesize(const std::string& name, const std::vector<std::shared_ptr<Expr::Expr>>& exprs);
 
   std::stringstream _builder{};
 };
