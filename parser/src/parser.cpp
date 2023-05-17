@@ -65,23 +65,19 @@ Expr::expr_ptr Parser::unary() {
 }
 
 Expr::expr_ptr Parser::primary() {
-  Expr::expr_ptr ret;
-
   if (advanceIfMatch({FALSE}))
-    ret = std::make_shared<Expr::LiteralExpr>(false);
+    return std::make_shared<Expr::LiteralExpr>(false);
   if (advanceIfMatch({TRUE}))
-    ret = std::make_shared<Expr::LiteralExpr>(true);
+    return std::make_shared<Expr::LiteralExpr>(true);
   if (advanceIfMatch({NIL}))
-    ret = std::make_shared<Expr::LiteralExpr>(std::monostate());
+    return std::make_shared<Expr::LiteralExpr>(std::monostate());
 
   if (advanceIfMatch({LEFT_PAREN})) {
     Expr::expr_ptr expr = expression();
     consume(RIGHT_PAREN, "Expect ')' after expression.");
 
-    ret = std::make_shared<Expr::GroupingExpr>(expr);
+    return std::make_shared<Expr::GroupingExpr>(expr);
   }
-
-  return ret;
 }
 
 bool Parser::advanceIfMatch(std::initializer_list<TOKEN_TYPE> types) {

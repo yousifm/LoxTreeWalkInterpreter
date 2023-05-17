@@ -11,10 +11,11 @@ public:
   struct variant_print {
     std::string operator()(const std::string& x) const {return x;}
     std::string operator()(double x) const { return std::to_string(x);}
+    std::string operator()(bool x) const {return x ? "true" : "false";}
     std::string operator()(const std::monostate& x) const {return "nil";}
   };
 
-  typedef std::variant<std::monostate, std::string, double> literal_variant;
+  typedef std::variant<std::monostate, std::string, double, bool> literal_variant;
   
   Token(TOKEN_TYPE, std::string );
   Token(TOKEN_TYPE, std::string , literal_variant);

@@ -213,7 +213,12 @@ std::optional<Token> Tokenizer::handleIdentifier() {
     type = _keywords.at(substring);
   }
 
-  return makeToken(type);
+  Token::literal_variant literal = std::monostate();
+  
+  if      (type == FALSE)literal = false;
+  else if (type == TRUE) literal = true;
+
+  return makeToken(type, literal);
 }
 
 void Tokenizer::handleMultilineComment() {
