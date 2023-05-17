@@ -22,6 +22,7 @@ add_subdirectory(interpreter)
 add_subdirectory(tokenizer)
 add_subdirectory(expression)
 add_subdirectory(util)
+add_subdirectory(parser)
 
 add_executable(Interpreter src/main.cpp)
 
