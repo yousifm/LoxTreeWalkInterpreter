@@ -12,7 +12,7 @@ public:
     std::string operator()(const std::string& x) const {return x;}
     std::string operator()(double x) const { return std::to_string(x);}
     std::string operator()(bool x) const {return x ? "true" : "false";}
-    std::string operator()(const std::monostate& x) const {return "nil";}
+    std::string operator()(const std::monostate& x) const {return "";}
   };
 
   typedef std::variant<std::monostate, std::string, double, bool> literal_variant;
