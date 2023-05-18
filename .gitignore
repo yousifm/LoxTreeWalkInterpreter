@@ -1,0 +1,16 @@
+.cmake
+.cache
+build
+libs
+_deps
+*CMakeFiles
+*Makefile
+
+CMakeCache.txt
+compile_commands.json
+Interpreter
+
+*.cmake
+*.a
+*.so
+
