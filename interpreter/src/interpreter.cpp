@@ -32,10 +32,10 @@ void run(const std::string& source) {
   }
 }
 
-void error(int line, const std::string& message) {
+void error(size_t line, const std::string& message) {
   report(line, "", message);
 }
 
-void report(int line, const std::string& location, const std::string& message) {
-  std::cout << "[line " << line << "] Error " << location << ": " << message << std::endl;
+void report(size_t line, const std::string& location, const std::string& message) {
+  std::cerr << "[line " << line << "] Error " << location << ": " << message << std::endl;
 }
