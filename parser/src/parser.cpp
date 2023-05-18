@@ -4,6 +4,18 @@
 
 Parser::Parser(std::vector<Token> tokens) : _tokens(std::move(tokens)) {}
 
+Expr::expr_ptr Parser::parse() {
+  try {
+    return expression();
+  } catch (Parser::Exception e) {
+    return Expr::expr_ptr(nullptr);
+  }
+}
+
+Expr::expr_ptr Parser::expression() {
+  return equality();
+}
+
 Expr::expr_ptr Parser::equality() {
   Expr::expr_ptr expr = comparison();
 
@@ -71,6 +83,9 @@ Expr::expr_ptr Parser::primary() {
     return std::make_shared<Expr::LiteralExpr>(true);
   if (advanceIfMatch({NIL}))
     return std::make_shared<Expr::LiteralExpr>(std::monostate());
+  if (advanceIfMatch({NUMBER, STRING})) {
+    return std::make_shared<Expr::LiteralExpr>(previous().literal());
+  }
 
   if (advanceIfMatch({LEFT_PAREN})) {
     Expr::expr_ptr expr = expression();
@@ -78,6 +93,8 @@ Expr::expr_ptr Parser::primary() {
 
     return std::make_shared<Expr::GroupingExpr>(expr);
   }
+
+  throw error(peek(), "Expected expression");
 }
 
 bool Parser::advanceIfMatch(std::initializer_list<TOKEN_TYPE> types) {
@@ -105,9 +122,23 @@ Token Parser::peek() { return _tokens[_current]; }
 Token Parser::previous() { return _tokens[_current - 1]; }
 
 void Parser::consume(TOKEN_TYPE type, const std::string &error_message) {
-  if (!advanceIfMatch({type})) {
-    error(0, error_message);
+  if (check(type)) {
+    return advance();
   }
+
+  throw error(peek(), error_message);
 }
 
 void Parser::advance() { _current++; }
+
+
+Parser::Exception Parser::error(Token token, const std::string& message) {
+  if (token.type() == TOKEN_TYPE::END_OF_FILE) {
+    Interpretter::report(token.line(), " at end", message);
+  } else {
+    Interpretter::report(token.line(), "at '" + token.lexeme() + "'", message);
+  }
+
+  return Parser::Exception{message};
+}
+

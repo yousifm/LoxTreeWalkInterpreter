@@ -121,7 +121,7 @@ std::optional<Token> Tokenizer::getToken() {
         std::stringstream s;
         s << "Unexpected character: " << c;
 
-        error(_line, s.str());
+        Interpretter::error(_line, s.str());
       }
       break;
   }
@@ -176,7 +176,7 @@ std::optional<Token> Tokenizer::handleString() {
   }
 
   if (isEnd()) {
-    error(_line, "Unterminated string.");
+    Interpretter::error(_line, "Unterminated string.");
     return std::nullopt;
   }
   
@@ -230,7 +230,7 @@ void Tokenizer::handleMultilineComment() {
 
   // Report error if the end is reached without finding teminating characters
   if (isEnd()) {
-    error(_line, "Unterminated multline comment");
+    Interpretter::error(_line, "Unterminated multline comment");
   }
   // Skip the terminating characters
   else {

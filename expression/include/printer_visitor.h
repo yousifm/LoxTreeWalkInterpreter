@@ -4,9 +4,9 @@
 #include <token.h>
 
 #include <initializer_list>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <sstream>
 
 class PrinterVisitor : public Expr::ExprVisitor {
 public:
@@ -20,11 +20,11 @@ public:
 
   std::string getOutput();
 
-  std::string print(const std::shared_ptr<Expr::Expr>& expr);
+  void print(const std::shared_ptr<Expr::Expr> &expr);
 
 private:
-  void parenthesize(const std::string& name, const std::vector<std::shared_ptr<Expr::Expr>>& exprs);
+  void parenthesize(const std::string &name,
+                    const std::vector<std::shared_ptr<Expr::Expr>> &exprs);
 
   std::stringstream _builder{};
 };
-

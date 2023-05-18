@@ -9,9 +9,9 @@ int main (int argc, char *argv[]) {
     std::cout << "Usage: lox [script]" << std::endl;
     exit(64);
   } else if (argc == 2) {
-    runFile(argv[1]);
+    Interpretter::runFile(argv[1]);
   } else {
-    runPrompt();
+    Interpretter::runPrompt();
   }
 
   return 0;

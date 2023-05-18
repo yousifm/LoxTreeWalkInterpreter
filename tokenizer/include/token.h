@@ -3,30 +3,32 @@
 #include "token_type.h"
 
 #include <iostream>
-#include <variant>
 #include <string>
+#include <variant>
 
 class Token {
 public:
   struct variant_print {
-    std::string operator()(const std::string& x) const {return x;}
-    std::string operator()(double x) const { return std::to_string(x);}
-    std::string operator()(bool x) const {return x ? "true" : "false";}
-    std::string operator()(const std::monostate& x) const {return "";}
+    std::string operator()(const std::string &x) const { return x; }
+    std::string operator()(double x) const { return std::to_string(x); }
+    std::string operator()(bool x) const { return x ? "true" : "false"; }
+    std::string operator()(const std::monostate &x) const { return ""; }
   };
 
-  typedef std::variant<std::monostate, std::string, double, bool> literal_variant;
-  
-  Token(TOKEN_TYPE, std::string );
-  Token(TOKEN_TYPE, std::string , literal_variant);
-  Token(TOKEN_TYPE, std::string , literal_variant, size_t);
-  
-  TOKEN_TYPE type()    const      {return _type;}
-  std::string lexeme() const      {return _lexeme;}
-  literal_variant literal() const {return _literal;}
+  typedef std::variant<std::monostate, std::string, double, bool>
+      literal_variant;
 
-  bool operator==(const Token&) const;
-  friend std::ostream& operator<<(std::ostream&, const Token&);
+  Token(TOKEN_TYPE, std::string);
+  Token(TOKEN_TYPE, std::string, literal_variant);
+  Token(TOKEN_TYPE, std::string, literal_variant, size_t);
+
+  TOKEN_TYPE type() const { return _type; }
+  std::string lexeme() const { return _lexeme; }
+  literal_variant literal() const { return _literal; }
+  size_t line() const { return _line; }
+  bool operator==(const Token &) const;
+  friend std::ostream &operator<<(std::ostream &, const Token &);
+
 private:
   TOKEN_TYPE _type;
   std::string _lexeme;
