@@ -1,6 +1,6 @@
 #include "parser.h"
 #include "expr.h"
-#include "interpreter.h"
+#include "lox.h"
 #include "token_type.h"
 
 Parser::Parser(std::vector<Token> tokens) : _tokens(std::move(tokens)) {}
@@ -148,9 +148,9 @@ void Parser::advance() { _current++; }
 
 Parser::Exception Parser::error(Token token, const std::string &message) {
   if (token.type() == TOKEN_TYPE::END_OF_FILE) {
-    Interpretter::report(token.line(), " at end", message);
+    Lox::report(token.line(), " at end", message);
   } else {
-    Interpretter::report(token.line(), "at '" + token.lexeme() + "'", message);
+    Lox::report(token.line(), "at '" + token.lexeme() + "'", message);
   }
 
   return Parser::Exception{message};

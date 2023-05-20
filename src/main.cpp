@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include <interpreter.h>
+#include <lox.h>
 #include <expr.h>
 #include <printer_visitor.h>
 
@@ -9,9 +9,9 @@ int main (int argc, char *argv[]) {
     std::cout << "Usage: lox [script]" << std::endl;
     exit(64);
   } else if (argc == 2) {
-    Interpretter::runFile(argv[1]);
+    Lox::runFile(argv[1]);
   } else {
-    Interpretter::runPrompt();
+    Lox::runPrompt();
   }
 
   return 0;

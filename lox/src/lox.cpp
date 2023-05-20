@@ -1,6 +1,6 @@
 #include "expr.h"
 #include <file.h>
-#include <interpreter.h>
+#include <lox.h>
 #include <parser.h>
 #include <printer_visitor.h>
 #include <tokenizer.h>
@@ -8,12 +8,12 @@
 #include <iostream>
 #include <vector>
 
-void Interpretter::runFile(const std::string &path) {
+void Lox::runFile(const std::string &path) {
   std::string content = readFile(path);
   run(content);
 }
 
-void Interpretter::runPrompt() {
+void Lox::runPrompt() {
   std::string line;
 
   for (;;) {
@@ -26,7 +26,7 @@ void Interpretter::runPrompt() {
   }
 }
 
-void Interpretter::run(const std::string &source) {
+void Lox::run(const std::string &source) {
   hadError = false;
 
   Tokenizer tokenizer{source};
@@ -42,11 +42,11 @@ void Interpretter::run(const std::string &source) {
   printer.print(expressionTree);
 }
 
-void Interpretter::error(size_t line, const std::string &message) {
+void Lox::error(size_t line, const std::string &message) {
   report(line, "", message);
 }
 
-void Interpretter::report(size_t line, const std::string &location,
+void Lox::report(size_t line, const std::string &location,
                           const std::string &message) {
   hadError = true;
 
@@ -54,4 +54,4 @@ void Interpretter::report(size_t line, const std::string &location,
             << std::endl;
 }
 
-bool Interpretter::hadError = false;
+bool Lox::hadError = false;

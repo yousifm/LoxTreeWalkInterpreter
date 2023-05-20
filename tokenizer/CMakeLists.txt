@@ -17,7 +17,7 @@ target_include_directories(tokenizer PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include
 
 target_link_libraries(tokenizer
   PUBLIC token
-  PUBLIC interpreter
+  PUBLIC lox
 )
 
 add_executable(

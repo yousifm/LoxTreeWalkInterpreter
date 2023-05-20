@@ -4,7 +4,7 @@
 
 #include <string>
 
-class Interpretter {
+class Lox {
 public:
   static void runFile(const std::string &);
   static void runPrompt();

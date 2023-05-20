@@ -18,7 +18,7 @@ enable_testing()
 
 add_subdirectory(config)
 
-add_subdirectory(interpreter)
+add_subdirectory(lox)
 add_subdirectory(tokenizer)
 add_subdirectory(expression)
 add_subdirectory(util)
@@ -26,7 +26,6 @@ add_subdirectory(parser)
 
 add_executable(Interpreter src/main.cpp)
 
-target_link_libraries(Interpreter PRIVATE interpreter)
-target_link_libraries(Interpreter PRIVATE expression)
+target_link_libraries(Interpreter PRIVATE lox PRIVATE expression)
 
 set_target_properties(Interpreter PROPERTIES LINKER_LANGUAGE CXX)

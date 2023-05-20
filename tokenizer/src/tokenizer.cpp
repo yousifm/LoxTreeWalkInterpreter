@@ -1,5 +1,5 @@
 #include <cctype>
-#include <interpreter.h>
+#include <lox.h>
 #include <string>
 #include <token.h>
 #include <token_type.h>
@@ -116,7 +116,7 @@ std::optional<Token> Tokenizer::getToken() {
       std::stringstream s;
       s << "Unexpected character: " << c;
 
-      Interpretter::error(_line, s.str());
+      Lox::error(_line, s.str());
     }
     break;
   }
@@ -167,7 +167,7 @@ std::optional<Token> Tokenizer::handleString() {
   }
 
   if (isEnd()) {
-    Interpretter::error(_line, "Unterminated string.");
+    Lox::error(_line, "Unterminated string.");
     return std::nullopt;
   }
 
@@ -227,7 +227,7 @@ void Tokenizer::handleMultilineComment() {
 
   // Report error if the end is reached without finding teminating characters
   if (isEnd()) {
-    Interpretter::error(_line, "Unterminated multline comment");
+    Lox::error(_line, "Unterminated multline comment");
   }
   // Skip the terminating characters
   else {
