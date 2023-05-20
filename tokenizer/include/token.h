@@ -5,9 +5,17 @@
 #include <iostream>
 #include <string>
 #include <variant>
+#include <any>
 
 class Token {
 public:
+  struct variant_value_getter {
+    std::any operator()(const std::string& x) const { return x; }
+    std::any operator()(double x) const { return x; }
+    std::any operator()(bool x) const {return x;}
+    std::any operator()(const std::monostate& x) const {return x;}
+  };
+
   struct variant_print {
     std::string operator()(const std::string &x) const { return x; }
     std::string operator()(double x) const { return std::to_string(x); }

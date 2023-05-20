@@ -4,6 +4,7 @@
 #include <parser.h>
 #include <printer_visitor.h>
 #include <tokenizer.h>
+#include <interpreter.h>
 
 #include <iostream>
 #include <vector>
@@ -34,12 +35,15 @@ void Lox::run(const std::string &source) {
 
   Parser parser{tokens};
   const Expr::Expr* expressionTree = parser.parse();
+  
+  Interpreter interpreter;
 
   if (hadError)
     return;
+  
+  std::any result = interpreter.eval(expressionTree);
 
-  PrinterVisitor printer;
-  printer.print(expressionTree);
+  print_any(result);
 }
 
 void Lox::error(size_t line, const std::string &message) {
@@ -52,6 +56,16 @@ void Lox::report(size_t line, const std::string &location,
 
   std::cerr << "[line " << line << "] Error " << location << ": " << message
             << std::endl;
+}
+
+void Lox::print_any(const std::any& val) {
+  if (val.type() == typeid(std::string)) {
+    std::cout << std::any_cast<std::string>(val) << std::endl;
+  } else if (val.type() == typeid(double)) {
+    std::cout << std::any_cast<double>(val) << std::endl;
+  } else if (val.type() == typeid(bool)) {
+    std::cout << std::any_cast<bool>(val) << std::endl;
+  }
 }
 
 bool Lox::hadError = false;

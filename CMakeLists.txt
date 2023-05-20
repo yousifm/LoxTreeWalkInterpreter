@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14...3.26)
 
-project(Interpreter)
+project(LoxTreeWalk)
 
 set(CMAKE_CXX_COMPILER /usr/bin/c++)
 set(CMAKE_CXX_STANDARD 20)
@@ -23,9 +23,10 @@ add_subdirectory(tokenizer)
 add_subdirectory(expression)
 add_subdirectory(util)
 add_subdirectory(parser)
+add_subdirectory(interpreter)
 
-add_executable(Interpreter src/main.cpp)
+add_executable(LoxTreeWalk src/main.cpp)
 
-target_link_libraries(Interpreter PRIVATE lox PRIVATE expression)
+target_link_libraries(LoxTreeWalk PRIVATE lox PRIVATE expression)
 
-set_target_properties(Interpreter PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(LoxTreeWalk PROPERTIES LINKER_LANGUAGE CXX)

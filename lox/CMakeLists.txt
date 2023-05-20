@@ -10,4 +10,5 @@ target_link_libraries(lox
   PUBLIC util
   PUBLIC tokenizer
   PUBLIC parser
+  PUBLIC interpreter
 )

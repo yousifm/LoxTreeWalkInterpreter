@@ -11,7 +11,7 @@ public:
   static void run(const std::string &);
   static void error(size_t, const std::string &);
   static void report(size_t, const std::string &, const std::string &);
-
+  static void print_any(const std::any&);
 private:
   static bool hadError;
 };
