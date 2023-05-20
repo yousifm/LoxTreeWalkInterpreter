@@ -16,7 +16,7 @@ Expr::Expr* Parser::parse() {
 Expr::Expr* Parser::expression() { return ternary(); }
 
 Expr::Expr* Parser::ternary() {
-  Expr::Expr* expr = comparison();
+  Expr::Expr* expr = equality();
 
   if (advanceIfMatch({QUESTION_MARK})) {
     Expr::Expr* first = expression();
