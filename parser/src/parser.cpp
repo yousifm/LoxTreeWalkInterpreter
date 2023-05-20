@@ -5,108 +5,106 @@
 
 Parser::Parser(std::vector<Token> tokens) : _tokens(std::move(tokens)) {}
 
-Expr::expr_ptr Parser::parse() {
+Expr::Expr* Parser::parse() {
   try {
     return expression();
   } catch (Parser::Exception e) {
-    return Expr::expr_ptr(nullptr);
+    return new Expr::LiteralExpr(nullptr);
   }
 }
 
-Expr::expr_ptr Parser::expression() { return ternary(); }
+Expr::Expr* Parser::expression() { return ternary(); }
 
-Expr::expr_ptr Parser::ternary() {
-  Expr::expr_ptr expr = comparison();
+Expr::Expr* Parser::ternary() {
+  Expr::Expr* expr = comparison();
 
   if (advanceIfMatch({QUESTION_MARK})) {
-    Expr::expr_ptr first = expression();
+    Expr::Expr* first = expression();
     
     consume(SEMICOLON, "Expected semicolon");
 
-    Expr::expr_ptr second = expression();
-    expr = std::make_shared<Expr::TernaryExpr>(
-    Expr::TernaryExpr(expr, first, second));
+    Expr::Expr* second = expression();
+    expr = new Expr::TernaryExpr(expr, first, second);
   }
 
   return expr;
 }
 
-Expr::expr_ptr Parser::equality() {
-  Expr::expr_ptr expr = comparison();
+Expr::Expr* Parser::equality() {
+  Expr::Expr* expr = comparison();
 
   while (advanceIfMatch({BANG_EQUAL, EQUAL_EQUAL})) {
     Token op = previous();
 
-    Expr::expr_ptr right = comparison();
-    expr =
-        std::make_shared<Expr::BinaryExpr>(Expr::BinaryExpr(expr, op, right));
+    Expr::Expr* right = comparison();
+    expr = new Expr::BinaryExpr(expr, op, right);
   }
 
   return expr;
 }
 
-Expr::expr_ptr Parser::comparison() {
-  Expr::expr_ptr expr = term();
+Expr::Expr* Parser::comparison() {
+  Expr::Expr* expr = term();
 
   while (advanceIfMatch({GREATER, GREATER_EQUAL, LESS, LESS_EQUAL})) {
     Token op = previous();
-    Expr::expr_ptr right = term();
-    expr = std::make_shared<Expr::BinaryExpr>(expr, op, right);
+    Expr::Expr* right = term();
+    expr = new Expr::BinaryExpr(expr, op, right);
   }
 
   return expr;
 }
 
-Expr::expr_ptr Parser::term() {
-  Expr::expr_ptr expr = factor();
+Expr::Expr* Parser::term() {
+  Expr::Expr* expr = factor();
 
   while (advanceIfMatch({MINUS, PLUS})) {
     Token op = previous();
-    Expr::expr_ptr right = factor();
-    expr = std::make_shared<Expr::BinaryExpr>(expr, op, right);
+    Expr::Expr* right = factor();
+    expr = new Expr::BinaryExpr(expr, op, right);
   }
 
   return expr;
 }
 
-Expr::expr_ptr Parser::factor() {
-  Expr::expr_ptr expr = unary();
+Expr::Expr* Parser::factor() {
+  Expr::Expr* expr = unary();
 
   while (advanceIfMatch({SLASH, STAR})) {
     Token op = previous();
-    Expr::expr_ptr right = unary();
-    expr = std::make_shared<Expr::BinaryExpr>(expr, op, right);
+    Expr::Expr* right = unary();
+    expr = new Expr::BinaryExpr(expr, op, right);
   }
 
   return expr;
 }
 
-Expr::expr_ptr Parser::unary() {
+Expr::Expr* Parser::unary() {
   while (advanceIfMatch({MINUS, BANG})) {
     Token op = previous();
-    Expr::expr_ptr expr = unary();
-    return std::make_shared<Expr::UnaryExpr>(op, expr);
+    Expr::Expr* expr = unary();
+    return new Expr::UnaryExpr(op, expr);
   }
 
   return primary();
 }
 
-Expr::expr_ptr Parser::primary() {
+Expr::Expr* Parser::primary() {
   if (advanceIfMatch({FALSE}))
-    return std::make_shared<Expr::LiteralExpr>(false);
+    return new Expr::LiteralExpr(false);
   if (advanceIfMatch({TRUE}))
-    return std::make_shared<Expr::LiteralExpr>(true);
+    return new Expr::LiteralExpr(true);
   if (advanceIfMatch({NIL}))
-    return std::make_shared<Expr::LiteralExpr>(std::monostate());
+    return new Expr::LiteralExpr(std::monostate());
   if (advanceIfMatch({NUMBER, STRING})) {
-    return std::make_shared<Expr::LiteralExpr>(previous().literal());
+    return new Expr::LiteralExpr(previous().literal());
   }
 
   if (advanceIfMatch({LEFT_PAREN})) {
-    Expr::expr_ptr expr = expression();
+    Expr::Expr* expr = expression();
     consume(RIGHT_PAREN, "Expect ')' after expression.");
 
-    return std::make_shared<Expr::GroupingExpr>(expr);
+    return new Expr::GroupingExpr(expr);
   }
 
   throw error(peek(), "Expected expression");

@@ -11,17 +11,17 @@ public:
 
   Parser(std::vector<Token>);
 
-  Expr::expr_ptr parse();
+  Expr::Expr* parse();
 
 private:
-  Expr::expr_ptr expression();
-  Expr::expr_ptr ternary();
-  Expr::expr_ptr equality();
-  Expr::expr_ptr comparison();
-  Expr::expr_ptr term();
-  Expr::expr_ptr factor();
-  Expr::expr_ptr unary();
-  Expr::expr_ptr primary();
+  Expr::Expr* expression();
+  Expr::Expr* ternary();
+  Expr::Expr* equality();
+  Expr::Expr* comparison();
+  Expr::Expr* term();
+  Expr::Expr* factor();
+  Expr::Expr* unary();
+  Expr::Expr* primary();
 
   bool advanceIfMatch(std::initializer_list<TOKEN_TYPE>);
   bool check(TOKEN_TYPE);

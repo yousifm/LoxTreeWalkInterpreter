@@ -6,11 +6,11 @@ namespace Expr {
 
 class ExprVisitor {
 public:
-  virtual void visitBinary(std::shared_ptr<const BinaryExpr>) = 0;
-  virtual void visitLiteral(std::shared_ptr<const LiteralExpr>) = 0;
-  virtual void visitUnary(std::shared_ptr<const UnaryExpr>) = 0;
-  virtual void visitGrouping(std::shared_ptr<const GroupingExpr>) = 0;
-  virtual void visitTernary(std::shared_ptr<const TernaryExpr>) = 0;
+  virtual void visitBinary(const BinaryExpr*) = 0;
+  virtual void visitLiteral(const LiteralExpr*) = 0;
+  virtual void visitUnary(const UnaryExpr*) = 0;
+  virtual void visitGrouping(const GroupingExpr*) = 0;
+  virtual void visitTernary(const TernaryExpr*) = 0;
 };
 
-}
+} // namespace Expr

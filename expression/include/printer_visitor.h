@@ -10,23 +10,23 @@
 
 class PrinterVisitor : public Expr::ExprVisitor {
 public:
-  void visitBinary(std::shared_ptr<Expr::BinaryExpr const> expr) override;
+  void visitBinary(const Expr::BinaryExpr* expr) override;
 
-  void visitLiteral(std::shared_ptr<Expr::LiteralExpr const> expr) override;
+  void visitLiteral(const Expr::LiteralExpr* expr) override;
 
-  void visitGrouping(std::shared_ptr<Expr::GroupingExpr const> expr) override;
+  void visitGrouping(const Expr::GroupingExpr* expr) override;
 
-  void visitUnary(std::shared_ptr<Expr::UnaryExpr const> expr) override;
+  void visitUnary(const Expr::UnaryExpr* expr) override;
 
-  void visitTernary(std::shared_ptr<Expr::TernaryExpr const> expr) override;
+  void visitTernary(const Expr::TernaryExpr* expr) override;
 
-  std::string getOutput();
-
-  void print(const std::shared_ptr<Expr::Expr> &expr);
+  std::string print(const Expr::Expr *expr);
 
 private:
   void parenthesize(const std::string &name,
-                    const std::vector<std::shared_ptr<Expr::Expr>> &exprs);
+                    const std::vector<const Expr::Expr*> &exprs);
+
+  std::string getOutput();
 
   std::stringstream _builder{};
 };

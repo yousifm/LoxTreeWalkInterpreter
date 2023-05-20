@@ -8,23 +8,23 @@
 namespace Expr {
 
 void BinaryExpr::accept(ExprVisitor *visitor) const {
-  visitor->visitBinary(shared_from_this());
+  visitor->visitBinary(this);
 }
 
 void UnaryExpr::accept(ExprVisitor *visitor) const {
-  visitor->visitUnary(shared_from_this());
+  visitor->visitUnary(this);
 }
 
 void LiteralExpr::accept(ExprVisitor *visitor) const {
-  visitor->visitLiteral(shared_from_this());
+  visitor->visitLiteral(this);
 }
 
 void GroupingExpr::accept(ExprVisitor *visitor) const {
-  visitor->visitGrouping(shared_from_this());
+  visitor->visitGrouping(this);
 }
 
 void TernaryExpr::accept(ExprVisitor *visitor) const {
-  visitor->visitTernary(shared_from_this());
+  visitor->visitTernary(this);
 }
 
 } // namespace Expr

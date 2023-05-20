@@ -10,7 +10,7 @@ namespace Expr {
 class Expr;
 class ExprVisitor;
 
-typedef std::shared_ptr<Expr> expr_ptr;
+typedef std::unique_ptr<const Expr> expr_ptr;
 
 class Expr {
 public:
@@ -20,14 +20,14 @@ public:
 class BinaryExpr : public Expr,
                    public std::enable_shared_from_this<BinaryExpr> {
 public:
-  BinaryExpr(expr_ptr left, Token op, expr_ptr right)
-      : _left(std::move(left)), _op(std::move(op)), _right(std::move(right)) {}
+  BinaryExpr(const Expr* left, Token op, const Expr* right)
+      : _left(left), _op(std::move(op)), _right(right) {}
 
   void accept(ExprVisitor *visitor) const override;
 
-  expr_ptr left() const { return _left; }
+  const Expr* left() const { return _left.get(); }
   Token op() const { return _op; }
-  expr_ptr right() const { return _right; }
+  const Expr* right() const { return _right.get(); }
 
 private:
   const expr_ptr _left;
@@ -35,8 +35,7 @@ private:
   const expr_ptr _right;
 };
 
-class LiteralExpr : public Expr,
-                    public std::enable_shared_from_this<LiteralExpr> {
+class LiteralExpr : public Expr {
 public:
   explicit LiteralExpr(Token::literal_variant value)
       : _value(std::move(value)) {}
@@ -49,47 +48,45 @@ private:
   const Token::literal_variant _value;
 };
 
-class UnaryExpr : public Expr, public std::enable_shared_from_this<UnaryExpr> {
+class UnaryExpr : public Expr {
 public:
-  UnaryExpr(Token op, expr_ptr right)
-      : _op(std::move(op)), _right(std::move(right)) {}
+  UnaryExpr(Token op, const Expr* right)
+      : _op(std::move(op)), _right(right) {}
 
   void accept(ExprVisitor *visitor) const override;
 
   Token op() const { return _op; }
-  expr_ptr right() const { return _right; }
+  const Expr* right() const { return _right.get(); }
 
 private:
   const Token _op;
   const expr_ptr _right;
 };
 
-class GroupingExpr : public Expr,
-                     public std::enable_shared_from_this<GroupingExpr> {
+class GroupingExpr : public Expr {
 public:
-  explicit GroupingExpr(expr_ptr expression)
-      : _expression(std::move(expression)) {}
+  explicit GroupingExpr(const Expr* expression)
+      : _expression(expression) {}
 
   void accept(ExprVisitor *visitor) const override;
 
-  expr_ptr expr() const { return _expression; }
+  const Expr* expr() const { return _expression.get(); }
 
 private:
   const expr_ptr _expression;
 };
 
-class TernaryExpr : public Expr,
-                    public std::enable_shared_from_this<TernaryExpr> {
+class TernaryExpr : public Expr {
 public:
-  explicit TernaryExpr(expr_ptr condition, expr_ptr first, expr_ptr second)
-      : _condition(std::move(condition)), _first(std::move(first)),
-        _second(std::move(second)) {}
+  explicit TernaryExpr(const Expr* condition, const Expr* first, const Expr* second)
+      : _condition(condition), _first(first),
+        _second(second) {}
 
   void accept(ExprVisitor *visitor) const override;
 
-  expr_ptr condition() const { return _condition; }
-  expr_ptr first() const { return _first; }
-  expr_ptr second() const { return _second; }
+  const Expr* condition() const { return _condition.get(); }
+  const Expr* first() const { return _first.get(); }
+  const Expr* second() const { return _second.get(); }
 
 private:
   const expr_ptr _condition;

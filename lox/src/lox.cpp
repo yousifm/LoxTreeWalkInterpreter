@@ -33,7 +33,7 @@ void Lox::run(const std::string &source) {
   std::vector<Token> tokens = tokenizer.getTokens();
 
   Parser parser{tokens};
-  Expr::expr_ptr expressionTree = parser.parse();
+  const Expr::Expr* expressionTree = parser.parse();
 
   if (hadError)
     return;
