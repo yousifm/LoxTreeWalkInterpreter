@@ -20,13 +20,12 @@ Expr::expr_ptr Parser::ternary() {
 
   if (advanceIfMatch({QUESTION_MARK})) {
     Expr::expr_ptr first = expression();
-    if (advanceIfMatch({SEMICOLON})) {
-      Expr::expr_ptr second = expression();
-      expr = std::make_shared<Expr::TernaryExpr>(
-          Expr::TernaryExpr(expr, first, second));
-    } else {
-      throw error(peek(), "Expected semicolon");
-    }
+    
+    consume(SEMICOLON, "Expected semicolon");
+
+    Expr::expr_ptr second = expression();
+    expr = std::make_shared<Expr::TernaryExpr>(
+    Expr::TernaryExpr(expr, first, second));
   }
 
   return expr;
