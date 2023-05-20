@@ -78,4 +78,23 @@ private:
   const expr_ptr _expression;
 };
 
+class TertiaryExpr : public Expr,
+                     public std::enable_shared_from_this<TertiaryExpr> {
+public:
+  explicit TertiaryExpr(expr_ptr condition, expr_ptr first, expr_ptr second)
+      : _condition(std::move(condition)), _first(std::move(first)),
+        _second(std::move(second)) {}
+
+  void accept(ExprVisitor *visitor) const override;
+
+  expr_ptr condition() const { return _condition; }
+  expr_ptr first() const { return _first; }
+  expr_ptr second() const { return _second; }
+
+private:
+  const expr_ptr _condition;
+  const expr_ptr _first;
+  const expr_ptr _second;
+};
+
 } // namespace Expr

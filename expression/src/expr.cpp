@@ -23,4 +23,8 @@ void GroupingExpr::accept(ExprVisitor *visitor) const {
   visitor->visitGrouping(shared_from_this());
 }
 
+void TertiaryExpr::accept(ExprVisitor *visitor) const {
+  visitor->visitTertiary(shared_from_this());
+}
+
 } // namespace Expr

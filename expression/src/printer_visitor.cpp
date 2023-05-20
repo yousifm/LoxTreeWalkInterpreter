@@ -18,6 +18,10 @@ void PrinterVisitor::visitUnary(std::shared_ptr<const Expr::UnaryExpr> expr) {
   parenthesize(expr->op().lexeme(), {expr->right()});
 }
 
+void PrinterVisitor::visitTertiary(std::shared_ptr<const Expr::TertiaryExpr> expr) {
+  parenthesize("tertiary", {expr->condition(), expr->first(), expr->second()});
+}
+
 std::string PrinterVisitor::getOutput() { return _builder.str(); }
 
 void PrinterVisitor::print(const std::shared_ptr<Expr::Expr> &expr) {
