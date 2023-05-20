@@ -61,7 +61,7 @@ void Interpreter::visitBinary(const Expr::BinaryExpr *expr) {
     } else if (isOfType<double>(left) && isOfType<double>(right)) {
       _value = std::any_cast<double>(left) + std::any_cast<double>(right);
     } else {
-      throw RuntimeError(expr->op(), "Operands must be numbers or strings");
+      throw RuntimeError(expr->op(), "Operands must both be numbers or strings");
     }
     break;
   case SLASH:
