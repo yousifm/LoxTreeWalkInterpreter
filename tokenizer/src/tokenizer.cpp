@@ -8,38 +8,25 @@
 #include <sstream>
 
 const std::unordered_map<std::string, TOKEN_TYPE> Tokenizer::_keywords = {
-  {"and",    AND},
-  {"class",  CLASS},
-  {"else",   ELSE},
-  {"false",  FALSE},
-  {"for",    FOR},
-  {"fun",    FUN},
-  {"if",     IF},
-  {"nil",    NIL},
-  {"or",     OR},
-  {"print",  PRINT},
-  {"return", RETURN},
-  {"super",  SUPER},
-  {"this",   THIS},
-  {"true",   TRUE},
-  {"var",    VAR},
-  {"while",  WHILE}
-};
+    {"and", AND},   {"class", CLASS}, {"else", ELSE},     {"false", FALSE},
+    {"for", FOR},   {"fun", FUN},     {"if", IF},         {"nil", NIL},
+    {"or", OR},     {"print", PRINT}, {"return", RETURN}, {"super", SUPER},
+    {"this", THIS}, {"true", TRUE},   {"var", VAR},       {"while", WHILE}};
 
-Tokenizer::Tokenizer(const std::string& source) : _source(source) {}
+Tokenizer::Tokenizer(const std::string &source) : _source(source) {}
 
 std::vector<Token> Tokenizer::getTokens() {
   std::vector<Token> tokens;
-  
-  while(!isEnd()) {
+
+  while (!isEnd()) {
     _start = _current;
 
     std::optional<Token> token = getToken();
-    
+
     if (token.has_value())
       tokens.emplace_back(token.value());
   }
-  
+
   tokens.emplace_back(Token{END_OF_FILE, "", std::monostate(), _line});
 
   return tokens;
@@ -47,86 +34,94 @@ std::vector<Token> Tokenizer::getTokens() {
 
 std::optional<Token> Tokenizer::getToken() {
   char c = advance();
-  
+
   std::optional<Token> tokenopt = std::nullopt;
 
   switch (c) {
-    case '(': 
-      tokenopt = makeToken(LEFT_PAREN);
-      break;
-    case ')':
-      tokenopt = makeToken(RIGHT_PAREN);
-      break;
-    case '{': 
-      tokenopt = makeToken(LEFT_BRACE);
-      break;
-    case '}': 
-      tokenopt = makeToken(RIGHT_BRACE);
-      break;
-    case ',': 
-      tokenopt = makeToken(COMMA);
-      break;
-    case '.': 
-      tokenopt = makeToken(DOT);
-      break;
-    case '-': 
-      tokenopt = makeToken(MINUS);
-      break;
-    case '+': 
-      tokenopt = makeToken(PLUS);
-      break;
-    case ';': 
-      tokenopt = makeToken(SEMICOLON);
-      break;
-    case '*': 
-      tokenopt = makeToken(STAR);
-      break;
-    case '!':
-      tokenopt = advanceIfMatch('=') ? makeToken(BANG_EQUAL) : makeToken(BANG);
-      break;
-    case '=':
-      tokenopt = advanceIfMatch('=') ? makeToken(EQUAL_EQUAL) : makeToken(EQUAL);
-      break;
-    case '<':
-      tokenopt = advanceIfMatch('=') ? makeToken(LESS_EQUAL) : makeToken(LESS);
-      break;
-    case '>':
-      tokenopt = advanceIfMatch('=') ? makeToken(GREATER_EQUAL) : makeToken(GREATER);
-      break;
-    case '/':
-      if(advanceIfMatch('/')) {
-        while(peek() != '\n' && !isEnd()) advance();
-      } else if(advanceIfMatch('*')) {
-        handleMultilineComment();
-      } else {
-        tokenopt = makeToken(SLASH);
-      }
-      break;
-    case '"':
-      tokenopt = handleString();
-      break;
-    case ' ':
-    case '\r':
-    case '\t':
-      break;
-    case '\n':
-      _line++;
-      break;
-    default:
-      if (isdigit(c)) {
-        tokenopt = handleNumber();
-      } else if (isalpha(c)) {
-        tokenopt = handleIdentifier(); 
-      } else {
-        std::stringstream s;
-        s << "Unexpected character: " << c;
+  case '(':
+    tokenopt = makeToken(LEFT_PAREN);
+    break;
+  case ')':
+    tokenopt = makeToken(RIGHT_PAREN);
+    break;
+  case '{':
+    tokenopt = makeToken(LEFT_BRACE);
+    break;
+  case '}':
+    tokenopt = makeToken(RIGHT_BRACE);
+    break;
+  case ',':
+    tokenopt = makeToken(COMMA);
+    break;
+  case '.':
+    tokenopt = makeToken(DOT);
+    break;
+  case '-':
+    tokenopt = makeToken(MINUS);
+    break;
+  case '+':
+    tokenopt = makeToken(PLUS);
+    break;
+  case ';':
+    tokenopt = makeToken(SEMICOLON);
+    break;
+  case '*':
+    tokenopt = makeToken(STAR);
+    break;
+  case '?':
+    tokenopt = makeToken(QUESTION_MARK);
+    break;
+  case ':':
+    tokenopt = makeToken(SEMICOLON);
+    break;
+  case '!':
+    tokenopt = advanceIfMatch('=') ? makeToken(BANG_EQUAL) : makeToken(BANG);
+    break;
+  case '=':
+    tokenopt = advanceIfMatch('=') ? makeToken(EQUAL_EQUAL) : makeToken(EQUAL);
+    break;
+  case '<':
+    tokenopt = advanceIfMatch('=') ? makeToken(LESS_EQUAL) : makeToken(LESS);
+    break;
+  case '>':
+    tokenopt =
+        advanceIfMatch('=') ? makeToken(GREATER_EQUAL) : makeToken(GREATER);
+    break;
+  case '/':
+    if (advanceIfMatch('/')) {
+      while (peek() != '\n' && !isEnd())
+        advance();
+    } else if (advanceIfMatch('*')) {
+      handleMultilineComment();
+    } else {
+      tokenopt = makeToken(SLASH);
+    }
+    break;
+  case '"':
+    tokenopt = handleString();
+    break;
+  case ' ':
+  case '\r':
+  case '\t':
+    break;
+  case '\n':
+    _line++;
+    break;
+  default:
+    if (isdigit(c)) {
+      tokenopt = handleNumber();
+    } else if (isalpha(c)) {
+      tokenopt = handleIdentifier();
+    } else {
+      std::stringstream s;
+      s << "Unexpected character: " << c;
 
-        Interpretter::error(_line, s.str());
-      }
-      break;
+      Interpretter::error(_line, s.str());
+    }
+    break;
   }
-   
-  return tokenopt; 
+
+  return tokenopt;
 }
 
 Token Tokenizer::makeToken(TOKEN_TYPE type, Token::literal_variant literal) {
@@ -134,44 +129,40 @@ Token Tokenizer::makeToken(TOKEN_TYPE type, Token::literal_variant literal) {
   return Token{type, text, literal, _line};
 }
 
-
-bool Tokenizer::isEnd() {
-  return _current >= _source.size();
-}
+bool Tokenizer::isEnd() { return _current >= _source.size(); }
 
 bool Tokenizer::advanceIfMatch(char expected) {
-  if (isEnd()) return false;
-  if (_source[_current] != expected) return false;
+  if (isEnd())
+    return false;
+  if (_source[_current] != expected)
+    return false;
 
   _current++;
 
   return true;
 }
 
-
-char Tokenizer::advance() {
-  return _source[_current++];
-}
+char Tokenizer::advance() { return _source[_current++]; }
 
 char Tokenizer::peek() {
-  if (isEnd()) return '\0';
+  if (isEnd())
+    return '\0';
   return _source[_current];
 }
 
 char Tokenizer::peekNext() {
-  if (_current + 1 >= _source.size()) return '\0';
+  if (_current + 1 >= _source.size())
+    return '\0';
 
   return _source[_current + 1];
 }
 
-void Tokenizer::skip(size_t num) {
-  _current += num;
-}
-
+void Tokenizer::skip(size_t num) { _current += num; }
 
 std::optional<Token> Tokenizer::handleString() {
   while (peek() != '"' && !isEnd()) {
-    if (peek() == '\n') _line++;
+    if (peek() == '\n')
+      _line++;
     advance();
   }
 
@@ -179,7 +170,7 @@ std::optional<Token> Tokenizer::handleString() {
     Interpretter::error(_line, "Unterminated string.");
     return std::nullopt;
   }
-  
+
   advance();
 
   std::string literal = _source.substr(_start + 1, _current - _start - 2);
@@ -188,14 +179,16 @@ std::optional<Token> Tokenizer::handleString() {
 }
 
 std::optional<Token> Tokenizer::handleNumber() {
-  while (isdigit(peek())) advance();
+  while (isdigit(peek()))
+    advance();
 
   if (peek() == '.' && isdigit(peekNext())) {
     advance();
 
-    while (isdigit(peek())) advance();
+    while (isdigit(peek()))
+      advance();
   }
-  
+
   std::string substring = _source.substr(_start, _current - _start);
   double literal = std::stod(substring);
 
@@ -203,10 +196,11 @@ std::optional<Token> Tokenizer::handleNumber() {
 }
 
 std::optional<Token> Tokenizer::handleIdentifier() {
-  while (isalpha(peek())) advance();
-  
+  while (isalpha(peek()))
+    advance();
+
   std::string substring = _source.substr(_start, _current - _start);
-  
+
   TOKEN_TYPE type = IDENTIFIER;
 
   if (_keywords.contains(substring)) {
@@ -214,16 +208,19 @@ std::optional<Token> Tokenizer::handleIdentifier() {
   }
 
   Token::literal_variant literal = std::monostate();
-  
-  if      (type == FALSE)literal = false;
-  else if (type == TRUE) literal = true;
+
+  if (type == FALSE)
+    literal = false;
+  else if (type == TRUE)
+    literal = true;
 
   return makeToken(type, literal);
 }
 
 void Tokenizer::handleMultilineComment() {
   while (!(peek() == '*' && peekNext() == '/') && !isEnd()) {
-    if(peek() == '\n') _line++;
+    if (peek() == '\n')
+      _line++;
 
     advance();
   }
@@ -237,4 +234,3 @@ void Tokenizer::handleMultilineComment() {
     skip(2);
   }
 }
-

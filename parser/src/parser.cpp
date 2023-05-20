@@ -13,7 +13,23 @@ Expr::expr_ptr Parser::parse() {
 }
 
 Expr::expr_ptr Parser::expression() {
-  return equality();
+  return tertiary();
+}
+
+Expr::expr_ptr Parser::tertiary() {
+  Expr::expr_ptr expr = comparison();
+
+  while (advanceIfMatch({QUESTION_MARK})) {
+    Expr::expr_ptr first = comparison();
+    if (advanceIfMatch({SEMICOLON})) {
+      Expr::expr_ptr second = comparison();
+      expr = std::make_shared<Expr::TertiaryExpr>(Expr::TertiaryExpr(expr, first, second));
+    } else {
+      throw error(peek(), "Expected semicolon");
+    }
+  }
+
+  return expr;
 }
 
 Expr::expr_ptr Parser::equality() {
