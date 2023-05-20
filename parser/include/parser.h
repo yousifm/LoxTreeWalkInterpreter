@@ -15,7 +15,7 @@ public:
 
 private:
   Expr::expr_ptr expression();
-  Expr::expr_ptr tertiary();
+  Expr::expr_ptr ternary();
   Expr::expr_ptr equality();
   Expr::expr_ptr comparison();
   Expr::expr_ptr term();

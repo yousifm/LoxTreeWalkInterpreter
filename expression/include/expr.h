@@ -78,10 +78,10 @@ private:
   const expr_ptr _expression;
 };
 
-class TertiaryExpr : public Expr,
-                     public std::enable_shared_from_this<TertiaryExpr> {
+class TernaryExpr : public Expr,
+                    public std::enable_shared_from_this<TernaryExpr> {
 public:
-  explicit TertiaryExpr(expr_ptr condition, expr_ptr first, expr_ptr second)
+  explicit TernaryExpr(expr_ptr condition, expr_ptr first, expr_ptr second)
       : _condition(std::move(condition)), _first(std::move(first)),
         _second(std::move(second)) {}
 

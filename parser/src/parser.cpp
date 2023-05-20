@@ -1,4 +1,5 @@
 #include "parser.h"
+#include "expr.h"
 #include "interpreter.h"
 #include "token_type.h"
 
@@ -12,18 +13,17 @@ Expr::expr_ptr Parser::parse() {
   }
 }
 
-Expr::expr_ptr Parser::expression() {
-  return tertiary();
-}
+Expr::expr_ptr Parser::expression() { return ternary(); }
 
-Expr::expr_ptr Parser::tertiary() {
+Expr::expr_ptr Parser::ternary() {
   Expr::expr_ptr expr = comparison();
 
-  while (advanceIfMatch({QUESTION_MARK})) {
-    Expr::expr_ptr first = comparison();
+  if (advanceIfMatch({QUESTION_MARK})) {
+    Expr::expr_ptr first = expression();
     if (advanceIfMatch({SEMICOLON})) {
-      Expr::expr_ptr second = comparison();
-      expr = std::make_shared<Expr::TertiaryExpr>(Expr::TertiaryExpr(expr, first, second));
+      Expr::expr_ptr second = expression();
+      expr = std::make_shared<Expr::TernaryExpr>(
+          Expr::TernaryExpr(expr, first, second));
     } else {
       throw error(peek(), "Expected semicolon");
     }
@@ -147,8 +147,7 @@ void Parser::consume(TOKEN_TYPE type, const std::string &error_message) {
 
 void Parser::advance() { _current++; }
 
-
-Parser::Exception Parser::error(Token token, const std::string& message) {
+Parser::Exception Parser::error(Token token, const std::string &message) {
   if (token.type() == TOKEN_TYPE::END_OF_FILE) {
     Interpretter::report(token.line(), " at end", message);
   } else {
@@ -157,4 +156,3 @@ Parser::Exception Parser::error(Token token, const std::string& message) {
 
   return Parser::Exception{message};
 }
-

@@ -10,7 +10,7 @@ public:
   virtual void visitLiteral(std::shared_ptr<const LiteralExpr>) = 0;
   virtual void visitUnary(std::shared_ptr<const UnaryExpr>) = 0;
   virtual void visitGrouping(std::shared_ptr<const GroupingExpr>) = 0;
-  virtual void visitTertiary(std::shared_ptr<const TertiaryExpr>) = 0;
+  virtual void visitTernary(std::shared_ptr<const TernaryExpr>) = 0;
 };
 
 }

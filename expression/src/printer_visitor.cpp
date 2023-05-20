@@ -18,7 +18,7 @@ void PrinterVisitor::visitUnary(std::shared_ptr<const Expr::UnaryExpr> expr) {
   parenthesize(expr->op().lexeme(), {expr->right()});
 }
 
-void PrinterVisitor::visitTertiary(std::shared_ptr<const Expr::TertiaryExpr> expr) {
+void PrinterVisitor::visitTernary(std::shared_ptr<const Expr::TernaryExpr> expr) {
   parenthesize("tertiary", {expr->condition(), expr->first(), expr->second()});
 }
 

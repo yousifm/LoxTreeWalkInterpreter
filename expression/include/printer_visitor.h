@@ -18,7 +18,7 @@ public:
 
   void visitUnary(std::shared_ptr<Expr::UnaryExpr const> expr) override;
 
-  void visitTertiary(std::shared_ptr<Expr::TertiaryExpr const> expr) override;
+  void visitTernary(std::shared_ptr<Expr::TernaryExpr const> expr) override;
 
   std::string getOutput();
 
