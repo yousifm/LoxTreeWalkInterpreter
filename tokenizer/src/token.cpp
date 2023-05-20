@@ -20,7 +20,7 @@ bool Token::operator==(const Token& other) const {
 
 std::ostream& operator<<(std::ostream& outs, const Token& token)
 {
-  outs << token._type << " " << token._lexeme << " ";
+  outs << token._lexeme << " ";
   outs << std::visit(Token::variant_print(), token._literal);
 
   return outs;
