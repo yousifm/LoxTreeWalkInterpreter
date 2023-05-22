@@ -19,7 +19,7 @@ void Interpreter::visitUnary(const Expr::UnaryExpr *expr) {
     _value = std::any_cast<double>(_value);
     break;
   case BANG:
-    _value = !isTruthy(_value);
+    _value = !isTruthyVal(_value);
     break;
   default:
     throw RuntimeError(expr->op(), "Invalid operator to Unary expression");
@@ -83,7 +83,7 @@ void Interpreter::visitBinary(const Expr::BinaryExpr *expr) {
 }
 
 void Interpreter::visitTernary(const Expr::TernaryExpr *expr) {
-  if (isTruthy(expr->condition())) {
+  if (isTruthyExpr(expr->condition())) {
     evalutate(expr->first());
   } else {
     evalutate(expr->second());
@@ -103,12 +103,12 @@ void Interpreter::enforceDouble(Token op, const std::any &val) {
   throw RuntimeError(op, "Operand must be a number.");
 }
 
-bool Interpreter::isTruthy(const Expr::Expr* expr) {
+bool Interpreter::isTruthyExpr(const Expr::Expr* expr) {
   evalutate(expr);
-  return isTruthy(_value);
+  return isTruthyVal(_value);
 }
 
-bool Interpreter::isTruthy(const std::any &val) {
+bool Interpreter::isTruthyVal(const std::any &val) {
   if (!val.has_value())
     return false;
 
