@@ -103,9 +103,15 @@ void Interpreter::enforceDouble(Token op, const std::any &val) {
   throw RuntimeError(op, "Operand must be a number.");
 }
 
+bool Interpreter::isTruthy(const Expr::Expr* expr) {
+  evalutate(expr);
+  return isTruthy(_value);
+}
+
 bool Interpreter::isTruthy(const std::any &val) {
   if (!val.has_value())
     return false;
+
   if (isOfType<bool>(val))
     return std::any_cast<bool>(val);
   return true;

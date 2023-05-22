@@ -13,6 +13,7 @@ private:
   void evalutate(const Expr::Expr *);
   void enforceDouble(Token, const std::any &);
 
+  bool isTruthy(const Expr::Expr*);
   bool isTruthy(const std::any &);
   bool isEqual(const std::any &, const std::any &);
 
