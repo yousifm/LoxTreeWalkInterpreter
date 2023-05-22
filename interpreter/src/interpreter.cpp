@@ -65,6 +65,7 @@ void Interpreter::visitBinary(const Expr::BinaryExpr *expr) {
     }
     break;
   case SLASH:
+    if (std::any_cast<double>(right) == 0) throw RuntimeError(expr->op(), "Division by Zero");
     _value = std::any_cast<double>(left) / std::any_cast<double>(right);
     break;
   case STAR:
