@@ -62,7 +62,8 @@ void Lox::print_any(const std::any &val) {
   } else if (val.type() == typeid(double)) {
     std::cout << std::any_cast<double>(val) << std::endl;
   } else if (val.type() == typeid(bool)) {
-    std::cout << std::any_cast<bool>(val) << std::endl;
+    bool value = std::any_cast<bool>(val);
+    std::cout << (value ? "true" : "false") << std::endl;
   }
 }
 
