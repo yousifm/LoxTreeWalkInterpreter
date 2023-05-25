@@ -8,4 +8,5 @@ target_include_directories(interpreter PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/inclu
 target_link_libraries(
   interpreter
   PRIVATE expression
+  PRIVATE lox
 )

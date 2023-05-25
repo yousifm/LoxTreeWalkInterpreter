@@ -1,7 +1,32 @@
 #include "interpreter.h"
+#include "lox.h"
 #include "runtime_error.h"
 #include "token_type.h"
+
 #include <any>
+
+void Interpreter::interpret(const std::vector<Stmt::Stmt *> statements) {
+  try {
+    for (const Stmt::Stmt *statement : statements) {
+      statement->accept(this);
+    }
+  } catch (RuntimeError err) {
+  }
+}
+
+std::any Interpreter::eval(const Expr::Expr *expr) {
+  evalutate(expr);
+  return _value;
+}
+
+void Interpreter::visitExprStmt(const Stmt::ExprStmt *stmt) {
+  evalutate(stmt->expr());
+}
+
+void Interpreter::visitPrintStmt(const Stmt::PrintStmt *stmt) {
+  std::any val = eval(stmt->expr());
+  Lox::print_any(val);
+}
 
 void Interpreter::visitLiteral(const Expr::LiteralExpr *expr) {
   _value = std::visit(Token::variant_value_getter(), expr->value());
@@ -61,11 +86,13 @@ void Interpreter::visitBinary(const Expr::BinaryExpr *expr) {
     } else if (isOfType<double>(left) && isOfType<double>(right)) {
       _value = std::any_cast<double>(left) + std::any_cast<double>(right);
     } else {
-      throw RuntimeError(expr->op(), "Operands must both be numbers or strings");
+      throw RuntimeError(expr->op(),
+                         "Operands must both be numbers or strings");
     }
     break;
   case SLASH:
-    if (std::any_cast<double>(right) == 0) throw RuntimeError(expr->op(), "Division by Zero");
+    if (std::any_cast<double>(right) == 0)
+      throw RuntimeError(expr->op(), "Division by Zero");
     _value = std::any_cast<double>(left) / std::any_cast<double>(right);
     break;
   case STAR:
@@ -90,11 +117,6 @@ void Interpreter::visitTernary(const Expr::TernaryExpr *expr) {
   }
 }
 
-std::any Interpreter::eval(const Expr::Expr *expr) {
-  evalutate(expr);
-  return _value;
-}
-
 void Interpreter::evalutate(const Expr::Expr *expr) { expr->accept(this); }
 
 void Interpreter::enforceDouble(Token op, const std::any &val) {
@@ -103,7 +125,7 @@ void Interpreter::enforceDouble(Token op, const std::any &val) {
   throw RuntimeError(op, "Operand must be a number.");
 }
 
-bool Interpreter::isTruthyExpr(const Expr::Expr* expr) {
+bool Interpreter::isTruthyExpr(const Expr::Expr *expr) {
   evalutate(expr);
   return isTruthyVal(_value);
 }

@@ -1,19 +1,30 @@
+#pragma once
+
+#include "stmt.h"
+#include "stmt_visitor.h"
 #include <expression_visitor.h>
 
-class Interpreter : public Expr::ExprVisitor {
+#include <vector>
+
+class Interpreter : public Expr::ExprVisitor, public Stmt::StmtVisitor {
 public:
+  std::any eval(const Expr::Expr *);
+  void interpret(const std::vector<Stmt::Stmt*>);
+ 
+  void visitExprStmt(const Stmt::ExprStmt*) override;
+  void visitPrintStmt(const Stmt::PrintStmt*) override;
+
   void visitGrouping(const Expr::GroupingExpr *) override;
   void visitUnary(const Expr::UnaryExpr *) override;
   void visitBinary(const Expr::BinaryExpr *) override;
   void visitLiteral(const Expr::LiteralExpr *) override;
   void visitTernary(const Expr::TernaryExpr *) override;
-  
-  std::any eval(const Expr::Expr*);
+
 private:
   void evalutate(const Expr::Expr *);
   void enforceDouble(Token, const std::any &);
 
-  bool isTruthyExpr(const Expr::Expr*);
+  bool isTruthyExpr(const Expr::Expr *);
   bool isTruthyVal(const std::any &);
   bool isEqual(const std::any &, const std::any &);
 

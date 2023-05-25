@@ -35,21 +35,13 @@ void Lox::run(const std::string &source) {
   std::vector<Token> tokens = tokenizer.getTokens();
 
   Parser parser{tokens};
-  const Expr::Expr *expressionTree = parser.parse();
-
-  Interpreter interpreter;
+  const std::vector<Stmt::Stmt *> statements = parser.parse();
 
   if (hadError)
     return;
 
-  try {
-    std::any result = interpreter.eval(expressionTree);
-
-    print_any(result);
-  } catch (RuntimeError e) {
-    std::cout << "Runtime Error. Operator " << e._token << ": " << e.what()
-              << std::endl;
-  }
+  Interpreter interpreter;
+  interpreter.interpret(statements);
 }
 
 void Lox::error(size_t line, const std::string &message) {
@@ -72,6 +64,13 @@ void Lox::print_any(const std::any &val) {
   } else if (val.type() == typeid(bool)) {
     std::cout << std::any_cast<bool>(val) << std::endl;
   }
+}
+
+void Lox::runtime_error(RuntimeError err) {
+  std::cout << "Runtime Error. Operator " << err._token << ": " << err.what()
+            << std::endl;
+
+  hadError = true;
 }
 
 bool Lox::hadError = false;
