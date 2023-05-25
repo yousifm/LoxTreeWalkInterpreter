@@ -16,7 +16,7 @@ void Interpreter::visitUnary(const Expr::UnaryExpr *expr) {
 
   switch (expr->op().type()) {
   case MINUS:
-    _value = std::any_cast<double>(_value);
+    _value = -std::any_cast<double>(_value);
     break;
   case BANG:
     _value = !isTruthyVal(_value);
