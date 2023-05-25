@@ -5,91 +5,115 @@
 
 Parser::Parser(std::vector<Token> tokens) : _tokens(std::move(tokens)) {}
 
-Expr::Expr* Parser::parse() {
+std::vector<Stmt::Stmt *> Parser::parse() {
+  std::vector<Stmt::Stmt *> statements;
+
   try {
-    return expression();
-  } catch (Parser::Exception e) {
-    return new Expr::LiteralExpr(nullptr);
+    while (!isEnd()) {
+      statements.push_back(statement());
+    }
+  } catch (Exception) {
   }
+
+  return statements;
 }
 
-Expr::Expr* Parser::expression() { return ternary(); }
+Stmt::Stmt *Parser::statement() {
+  if (advanceIfMatch({PRINT}))
+    return printStatement();
 
-Expr::Expr* Parser::ternary() {
-  Expr::Expr* expr = equality();
+  return expressionStatement();
+}
+
+Stmt::Stmt *Parser::printStatement() {
+  Expr::Expr *expr = expression();
+  consume(SEMICOLON, "Expected ';' after expression.");
+  return new Stmt::PrintStmt(expr);
+}
+
+Stmt::Stmt *Parser::expressionStatement() {
+  Expr::Expr *expr = expression();
+  consume(SEMICOLON, "Expected ';' after expression.");
+  return new Stmt::ExprStmt(expr);
+}
+
+Expr::Expr *Parser::expression() { return ternary(); }
+
+Expr::Expr *Parser::ternary() {
+  Expr::Expr *expr = equality();
 
   if (advanceIfMatch({QUESTION_MARK})) {
-    Expr::Expr* first = expression();
-    
+    Expr::Expr *first = expression();
+
     consume(SEMICOLON, "Expected semicolon");
 
-    Expr::Expr* second = expression();
+    Expr::Expr *second = expression();
     expr = new Expr::TernaryExpr(expr, first, second);
   }
 
   return expr;
 }
 
-Expr::Expr* Parser::equality() {
-  Expr::Expr* expr = comparison();
+Expr::Expr *Parser::equality() {
+  Expr::Expr *expr = comparison();
 
   while (advanceIfMatch({BANG_EQUAL, EQUAL_EQUAL})) {
     Token op = previous();
 
-    Expr::Expr* right = comparison();
+    Expr::Expr *right = comparison();
     expr = new Expr::BinaryExpr(expr, op, right);
   }
 
   return expr;
 }
 
-Expr::Expr* Parser::comparison() {
-  Expr::Expr* expr = term();
+Expr::Expr *Parser::comparison() {
+  Expr::Expr *expr = term();
 
   while (advanceIfMatch({GREATER, GREATER_EQUAL, LESS, LESS_EQUAL})) {
     Token op = previous();
-    Expr::Expr* right = term();
+    Expr::Expr *right = term();
     expr = new Expr::BinaryExpr(expr, op, right);
   }
 
   return expr;
 }
 
-Expr::Expr* Parser::term() {
-  Expr::Expr* expr = factor();
+Expr::Expr *Parser::term() {
+  Expr::Expr *expr = factor();
 
   while (advanceIfMatch({MINUS, PLUS})) {
     Token op = previous();
-    Expr::Expr* right = factor();
+    Expr::Expr *right = factor();
     expr = new Expr::BinaryExpr(expr, op, right);
   }
 
   return expr;
 }
 
-Expr::Expr* Parser::factor() {
-  Expr::Expr* expr = unary();
+Expr::Expr *Parser::factor() {
+  Expr::Expr *expr = unary();
 
   while (advanceIfMatch({SLASH, STAR})) {
     Token op = previous();
-    Expr::Expr* right = unary();
+    Expr::Expr *right = unary();
     expr = new Expr::BinaryExpr(expr, op, right);
   }
 
   return expr;
 }
 
-Expr::Expr* Parser::unary() {
+Expr::Expr *Parser::unary() {
   while (advanceIfMatch({MINUS, BANG})) {
     Token op = previous();
-    Expr::Expr* expr = unary();
+    Expr::Expr *expr = unary();
     return new Expr::UnaryExpr(op, expr);
   }
 
   return primary();
 }
 
-Expr::Expr* Parser::primary() {
+Expr::Expr *Parser::primary() {
   if (advanceIfMatch({FALSE}))
     return new Expr::LiteralExpr(false);
   if (advanceIfMatch({TRUE}))
@@ -101,7 +125,7 @@ Expr::Expr* Parser::primary() {
   }
 
   if (advanceIfMatch({LEFT_PAREN})) {
-    Expr::Expr* expr = expression();
+    Expr::Expr *expr = expression();
     consume(RIGHT_PAREN, "Expect ')' after expression.");
 
     return new Expr::GroupingExpr(expr);

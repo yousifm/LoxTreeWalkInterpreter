@@ -1,19 +1,26 @@
+#pragma once
+
 #include <expr.h>
 #include <token.h>
-
+#include <stmt.h>
 #include <vector>
 
 class Parser {
 public:
   struct Exception : public std::runtime_error {
     Exception(const std::string &message) : runtime_error(message.c_str()) {}
+    
   };
 
   Parser(std::vector<Token>);
 
-  Expr::Expr* parse();
+  std::vector<Stmt::Stmt*> parse();
 
 private:
+  Stmt::Stmt* statement();
+  Stmt::Stmt* printStatement();
+  Stmt::Stmt* expressionStatement();
+
   Expr::Expr* expression();
   Expr::Expr* ternary();
   Expr::Expr* equality();
