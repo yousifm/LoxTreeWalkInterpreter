@@ -10,12 +10,35 @@ std::vector<Stmt::Stmt *> Parser::parse() {
 
   try {
     while (!isEnd()) {
-      statements.push_back(statement());
+      statements.push_back(declaration());
     }
   } catch (Exception) {
   }
 
   return statements;
+}
+
+Stmt::Stmt *Parser::declaration() {
+  try {
+    if (advanceIfMatch({VAR})) return varDeclaration();
+
+    return statement();
+  } catch (Exception error) {
+    synchronize();
+    return nullptr;
+  }
+}
+
+Stmt::Stmt* Parser::varDeclaration() {
+  Token name = consume(IDENTIFIER, "Expect variable name.");
+
+  Expr::Expr* initializer = nullptr;
+  if (advanceIfMatch({EQUAL})) {
+    initializer = expression();
+  }
+
+  consume(SEMICOLON, "Expect ';' after variable declaration.");
+  return new Stmt::VarStmt(name, initializer);
 }
 
 Stmt::Stmt *Parser::statement() {
@@ -27,7 +50,7 @@ Stmt::Stmt *Parser::statement() {
 
 Stmt::Stmt *Parser::printStatement() {
   Expr::Expr *expr = expression();
-  consume(SEMICOLON, "Expected ';' after expression.");
+  consume(SEMICOLON, "Expected ';' after expression."); 
   return new Stmt::PrintStmt(expr);
 }
 
@@ -123,7 +146,9 @@ Expr::Expr *Parser::primary() {
   if (advanceIfMatch({NUMBER, STRING})) {
     return new Expr::LiteralExpr(previous().literal());
   }
-
+  if (advanceIfMatch({IDENTIFIER})) {
+    return new Expr::VariableExpr(previous());
+  }
   if (advanceIfMatch({LEFT_PAREN})) {
     Expr::Expr *expr = expression();
     consume(RIGHT_PAREN, "Expect ')' after expression.");
@@ -158,12 +183,38 @@ Token Parser::peek() { return _tokens[_current]; }
 
 Token Parser::previous() { return _tokens[_current - 1]; }
 
-void Parser::consume(TOKEN_TYPE type, const std::string &error_message) {
+Token Parser::consume(TOKEN_TYPE type, const std::string &error_message) {
   if (check(type)) {
-    return advance();
+    Token ret = peek();
+    advance();
+    return ret;
   }
 
   throw error(peek(), error_message);
+}
+
+void Parser::synchronize() {
+  advance();
+
+  while (!isEnd()) {
+    if (previous().type() == SEMICOLON) return;
+
+    switch(peek().type()) {
+      case CLASS:
+      case FUN:
+      case VAR:
+      case FOR:
+      case IF:
+      case WHILE:
+      case PRINT:
+      case RETURN:
+        return;
+      default:
+        continue;
+    }
+
+    advance();
+  }
 }
 
 void Parser::advance() { _current++; }

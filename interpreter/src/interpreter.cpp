@@ -11,6 +11,7 @@ void Interpreter::interpret(const std::vector<Stmt::Stmt *> statements) {
       statement->accept(this);
     }
   } catch (RuntimeError err) {
+    Lox::runtime_error(err);
   }
 }
 
@@ -26,6 +27,16 @@ void Interpreter::visitExprStmt(const Stmt::ExprStmt *stmt) {
 void Interpreter::visitPrintStmt(const Stmt::PrintStmt *stmt) {
   std::any val = eval(stmt->expr());
   Lox::print_any(val);
+}
+
+void Interpreter::visitVarStmt(const Stmt::VarStmt *stmt) {
+  std::any val = nullptr;
+  
+  if (stmt->init() != nullptr) {
+    val = eval(stmt->init());
+  }
+
+  _environment.define(stmt->name().lexeme(), val);
 }
 
 void Interpreter::visitLiteral(const Expr::LiteralExpr *expr) {
@@ -115,6 +126,10 @@ void Interpreter::visitTernary(const Expr::TernaryExpr *expr) {
   } else {
     evalutate(expr->second());
   }
+}
+
+void Interpreter::visitVariable(const Expr::VariableExpr* expr) {
+  _value = _environment.get(expr->name());
 }
 
 void Interpreter::evalutate(const Expr::Expr *expr) { expr->accept(this); }

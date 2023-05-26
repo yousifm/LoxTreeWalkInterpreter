@@ -14,4 +14,10 @@ void PrintStmt::accept(StmtVisitor *visitor) const {
   visitor->visitPrintStmt(this);
 }
 
+VarStmt::VarStmt(Token name, Expr::Expr *init) : _name(name), _init(init) {}
+
+void VarStmt::accept(StmtVisitor *visitor) const {
+  visitor->visitVarStmt(this);
+}
+
 } // namespace Stmt

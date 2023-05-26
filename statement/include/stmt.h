@@ -33,4 +33,18 @@ private:
   Expr::Expr *_expr;
 };
 
+class VarStmt : public Stmt {
+public:
+  VarStmt(Token name, Expr::Expr *init);
+
+  void accept(StmtVisitor *) const;
+
+  const Expr::Expr *init() const { return _init; }
+  const Token &name() const { return _name; }
+
+private:
+  Token _name;
+  Expr::Expr *_init;
+};
+
 } // namespace Stmt

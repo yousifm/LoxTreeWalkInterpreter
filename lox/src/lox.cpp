@@ -40,7 +40,6 @@ void Lox::run(const std::string &source) {
   if (hadError)
     return;
 
-  Interpreter interpreter;
   interpreter.interpret(statements);
 }
 
@@ -75,3 +74,4 @@ void Lox::runtime_error(RuntimeError err) {
 }
 
 bool Lox::hadError = false;
+Interpreter Lox::interpreter{};

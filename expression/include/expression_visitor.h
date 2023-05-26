@@ -11,6 +11,7 @@ public:
   virtual void visitUnary(const UnaryExpr*) = 0;
   virtual void visitGrouping(const GroupingExpr*) = 0;
   virtual void visitTernary(const TernaryExpr*) = 0;
+  virtual void visitVariable(const VariableExpr*) = 0;
 };
 
 } // namespace Expr

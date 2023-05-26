@@ -94,4 +94,13 @@ private:
   const expr_ptr _second;
 };
 
+class VariableExpr : public Expr {
+public:
+  explicit VariableExpr(Token name) : _name(std::move(name)) {}
+  void accept(ExprVisitor *visitor) const override;
+  const Token& name() const {return _name;}
+private:
+  Token _name;
+};
+
 } // namespace Expr

@@ -27,4 +27,8 @@ void TernaryExpr::accept(ExprVisitor *visitor) const {
   visitor->visitTernary(this);
 }
 
+void VariableExpr::accept(ExprVisitor* visitor) const {
+  visitor->visitVariable(this);
+}
+
 } // namespace Expr

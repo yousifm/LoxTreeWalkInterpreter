@@ -3,6 +3,7 @@
 #include "stmt.h"
 #include "stmt_visitor.h"
 #include <expression_visitor.h>
+#include <environment.h>
 
 #include <vector>
 
@@ -13,12 +14,14 @@ public:
  
   void visitExprStmt(const Stmt::ExprStmt*) override;
   void visitPrintStmt(const Stmt::PrintStmt*) override;
+  void visitVarStmt(const Stmt::VarStmt*) override;
 
   void visitGrouping(const Expr::GroupingExpr *) override;
   void visitUnary(const Expr::UnaryExpr *) override;
   void visitBinary(const Expr::BinaryExpr *) override;
   void visitLiteral(const Expr::LiteralExpr *) override;
   void visitTernary(const Expr::TernaryExpr *) override;
+  void visitVariable(const Expr::VariableExpr *) override;
 
 private:
   void evalutate(const Expr::Expr *);
@@ -31,4 +34,5 @@ private:
   template <typename T> bool isOfType(const std::any &);
 
   std::any _value;
+  Environment _environment;
 };

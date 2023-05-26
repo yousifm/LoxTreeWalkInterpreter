@@ -17,6 +17,8 @@ public:
   std::vector<Stmt::Stmt*> parse();
 
 private:
+  Stmt::Stmt* declaration();
+  Stmt::Stmt* varDeclaration();
   Stmt::Stmt* statement();
   Stmt::Stmt* printStatement();
   Stmt::Stmt* expressionStatement();
@@ -38,7 +40,8 @@ private:
   Token previous();
 
   void advance();
-  void consume(TOKEN_TYPE, const std::string &);
+  void synchronize();
+  Token consume(TOKEN_TYPE, const std::string &);
 
   Exception error(Token, const std::string &);
 
