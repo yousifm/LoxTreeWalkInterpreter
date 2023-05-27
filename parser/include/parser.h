@@ -24,6 +24,7 @@ private:
   Stmt::Stmt* expressionStatement();
 
   Expr::Expr* expression();
+  Expr::Expr* assignment();
   Expr::Expr* ternary();
   Expr::Expr* equality();
   Expr::Expr* comparison();

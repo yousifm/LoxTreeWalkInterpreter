@@ -132,6 +132,11 @@ void Interpreter::visitVariable(const Expr::VariableExpr* expr) {
   _value = _environment.get(expr->name());
 }
 
+void Interpreter::visitAssign(const Expr::AssignExpr* expr) {
+  evalutate(expr->value());
+  _environment.assign(expr->name(), _value);
+}
+
 void Interpreter::evalutate(const Expr::Expr *expr) { expr->accept(this); }
 
 void Interpreter::enforceDouble(Token op, const std::any &val) {

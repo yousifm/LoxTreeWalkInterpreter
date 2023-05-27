@@ -20,14 +20,14 @@ public:
 class BinaryExpr : public Expr,
                    public std::enable_shared_from_this<BinaryExpr> {
 public:
-  BinaryExpr(const Expr* left, Token op, const Expr* right)
+  BinaryExpr(const Expr *left, Token op, const Expr *right)
       : _left(left), _op(std::move(op)), _right(right) {}
 
   void accept(ExprVisitor *visitor) const override;
 
-  const Expr* left() const { return _left.get(); }
+  const Expr *left() const { return _left.get(); }
   Token op() const { return _op; }
-  const Expr* right() const { return _right.get(); }
+  const Expr *right() const { return _right.get(); }
 
 private:
   const expr_ptr _left;
@@ -50,13 +50,12 @@ private:
 
 class UnaryExpr : public Expr {
 public:
-  UnaryExpr(Token op, const Expr* right)
-      : _op(std::move(op)), _right(right) {}
+  UnaryExpr(Token op, const Expr *right) : _op(std::move(op)), _right(right) {}
 
   void accept(ExprVisitor *visitor) const override;
 
   Token op() const { return _op; }
-  const Expr* right() const { return _right.get(); }
+  const Expr *right() const { return _right.get(); }
 
 private:
   const Token _op;
@@ -65,12 +64,11 @@ private:
 
 class GroupingExpr : public Expr {
 public:
-  explicit GroupingExpr(const Expr* expression)
-      : _expression(expression) {}
+  explicit GroupingExpr(const Expr *expression) : _expression(expression) {}
 
   void accept(ExprVisitor *visitor) const override;
 
-  const Expr* expr() const { return _expression.get(); }
+  const Expr *expr() const { return _expression.get(); }
 
 private:
   const expr_ptr _expression;
@@ -78,15 +76,15 @@ private:
 
 class TernaryExpr : public Expr {
 public:
-  explicit TernaryExpr(const Expr* condition, const Expr* first, const Expr* second)
-      : _condition(condition), _first(first),
-        _second(second) {}
+  explicit TernaryExpr(const Expr *condition, const Expr *first,
+                       const Expr *second)
+      : _condition(condition), _first(first), _second(second) {}
 
   void accept(ExprVisitor *visitor) const override;
 
-  const Expr* condition() const { return _condition.get(); }
-  const Expr* first() const { return _first.get(); }
-  const Expr* second() const { return _second.get(); }
+  const Expr *condition() const { return _condition.get(); }
+  const Expr *first() const { return _first.get(); }
+  const Expr *second() const { return _second.get(); }
 
 private:
   const expr_ptr _condition;
@@ -98,9 +96,25 @@ class VariableExpr : public Expr {
 public:
   explicit VariableExpr(Token name) : _name(std::move(name)) {}
   void accept(ExprVisitor *visitor) const override;
-  const Token& name() const {return _name;}
+  const Token &name() const { return _name; }
+
 private:
   Token _name;
+};
+
+class AssignExpr : public Expr {
+public:
+  explicit AssignExpr(Token name, Expr *value)
+      : _name(std::move(name)), _value(std::move(value)) {}
+
+  void accept(ExprVisitor *visitor) const override;
+
+  const Token name() const { return _name; }
+  const Expr *value() const { return _value; }
+
+private:
+  Token _name;
+  Expr *_value;
 };
 
 } // namespace Expr

@@ -60,7 +60,26 @@ Stmt::Stmt *Parser::expressionStatement() {
   return new Stmt::ExprStmt(expr);
 }
 
-Expr::Expr *Parser::expression() { return ternary(); }
+Expr::Expr *Parser::expression() { return assignment(); }
+
+Expr::Expr *Parser::assignment() {
+  Expr::Expr* expr = ternary();
+
+  if (advanceIfMatch({EQUAL})) {
+    Token equals = previous();
+    Expr::Expr* value = assignment();
+    
+    try {
+      Token name = dynamic_cast<Expr::VariableExpr*>(expr)->name();
+
+      return new Expr::AssignExpr(name, value);
+    } catch (std::exception e) {
+      error(equals, "Invalid assignment target.");
+    } 
+  }
+
+  return expr;
+}
 
 Expr::Expr *Parser::ternary() {
   Expr::Expr *expr = equality();

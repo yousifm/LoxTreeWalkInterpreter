@@ -2,19 +2,19 @@
 
 #include "stmt.h"
 #include "stmt_visitor.h"
-#include <expression_visitor.h>
 #include <environment.h>
+#include <expression_visitor.h>
 
 #include <vector>
 
 class Interpreter : public Expr::ExprVisitor, public Stmt::StmtVisitor {
 public:
   std::any eval(const Expr::Expr *);
-  void interpret(const std::vector<Stmt::Stmt*>);
- 
-  void visitExprStmt(const Stmt::ExprStmt*) override;
-  void visitPrintStmt(const Stmt::PrintStmt*) override;
-  void visitVarStmt(const Stmt::VarStmt*) override;
+  void interpret(const std::vector<Stmt::Stmt *>);
+
+  void visitExprStmt(const Stmt::ExprStmt *) override;
+  void visitPrintStmt(const Stmt::PrintStmt *) override;
+  void visitVarStmt(const Stmt::VarStmt *) override;
 
   void visitGrouping(const Expr::GroupingExpr *) override;
   void visitUnary(const Expr::UnaryExpr *) override;
@@ -22,6 +22,7 @@ public:
   void visitLiteral(const Expr::LiteralExpr *) override;
   void visitTernary(const Expr::TernaryExpr *) override;
   void visitVariable(const Expr::VariableExpr *) override;
+  void visitAssign(const Expr::AssignExpr *) override;
 
 private:
   void evalutate(const Expr::Expr *);

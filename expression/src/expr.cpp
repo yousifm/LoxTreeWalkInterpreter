@@ -31,4 +31,8 @@ void VariableExpr::accept(ExprVisitor* visitor) const {
   visitor->visitVariable(this);
 }
 
+void AssignExpr::accept(ExprVisitor* visitor) const {
+  visitor->visitAssign(this);
+}
+
 } // namespace Expr
