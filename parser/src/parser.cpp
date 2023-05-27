@@ -20,7 +20,8 @@ std::vector<Stmt::Stmt *> Parser::parse() {
 
 Stmt::Stmt *Parser::declaration() {
   try {
-    if (advanceIfMatch({VAR})) return varDeclaration();
+    if (advanceIfMatch({VAR}))
+      return varDeclaration();
 
     return statement();
   } catch (Exception error) {
@@ -29,10 +30,10 @@ Stmt::Stmt *Parser::declaration() {
   }
 }
 
-Stmt::Stmt* Parser::varDeclaration() {
+Stmt::Stmt *Parser::varDeclaration() {
   Token name = consume(IDENTIFIER, "Expect variable name.");
 
-  Expr::Expr* initializer = nullptr;
+  Expr::Expr *initializer = nullptr;
   if (advanceIfMatch({EQUAL})) {
     initializer = expression();
   }
@@ -44,13 +45,15 @@ Stmt::Stmt* Parser::varDeclaration() {
 Stmt::Stmt *Parser::statement() {
   if (advanceIfMatch({PRINT}))
     return printStatement();
+  if (advanceIfMatch({LEFT_BRACE}))
+    return new Stmt::Block(block());
 
   return expressionStatement();
 }
 
 Stmt::Stmt *Parser::printStatement() {
   Expr::Expr *expr = expression();
-  consume(SEMICOLON, "Expected ';' after expression."); 
+  consume(SEMICOLON, "Expected ';' after expression.");
   return new Stmt::PrintStmt(expr);
 }
 
@@ -60,22 +63,33 @@ Stmt::Stmt *Parser::expressionStatement() {
   return new Stmt::ExprStmt(expr);
 }
 
+std::vector<const Stmt::Stmt *> Parser::block() {
+  std::vector<const Stmt::Stmt *> statements;
+
+  while (!check(RIGHT_BRACE) && !isEnd()) {
+    statements.push_back(declaration());
+  }
+
+  consume(RIGHT_BRACE, "Expected '}' after block.");
+  return statements;
+}
+
 Expr::Expr *Parser::expression() { return assignment(); }
 
 Expr::Expr *Parser::assignment() {
-  Expr::Expr* expr = ternary();
+  Expr::Expr *expr = ternary();
 
   if (advanceIfMatch({EQUAL})) {
     Token equals = previous();
-    Expr::Expr* value = assignment();
-    
+    Expr::Expr *value = assignment();
+
     try {
-      Token name = dynamic_cast<Expr::VariableExpr*>(expr)->name();
+      Token name = dynamic_cast<Expr::VariableExpr *>(expr)->name();
 
       return new Expr::AssignExpr(name, value);
     } catch (std::exception e) {
       error(equals, "Invalid assignment target.");
-    } 
+    }
   }
 
   return expr;
@@ -216,20 +230,21 @@ void Parser::synchronize() {
   advance();
 
   while (!isEnd()) {
-    if (previous().type() == SEMICOLON) return;
+    if (previous().type() == SEMICOLON)
+      return;
 
-    switch(peek().type()) {
-      case CLASS:
-      case FUN:
-      case VAR:
-      case FOR:
-      case IF:
-      case WHILE:
-      case PRINT:
-      case RETURN:
-        return;
-      default:
-        continue;
+    switch (peek().type()) {
+    case CLASS:
+    case FUN:
+    case VAR:
+    case FOR:
+    case IF:
+    case WHILE:
+    case PRINT:
+    case RETURN:
+      return;
+    default:
+      continue;
     }
 
     advance();

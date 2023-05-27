@@ -15,6 +15,7 @@ public:
   void visitExprStmt(const Stmt::ExprStmt *) override;
   void visitPrintStmt(const Stmt::PrintStmt *) override;
   void visitVarStmt(const Stmt::VarStmt *) override;
+  void visitBlock(const Stmt::Block *) override;
 
   void visitGrouping(const Expr::GroupingExpr *) override;
   void visitUnary(const Expr::UnaryExpr *) override;
@@ -26,8 +27,9 @@ public:
 
 private:
   void evalutate(const Expr::Expr *);
+  void execute(const Stmt::Stmt *);
+  void executeBlock(const std::vector<const Stmt::Stmt *> &, Environment env);
   void enforceDouble(Token, const std::any &);
-
   bool isTruthyExpr(const Expr::Expr *);
   bool isTruthyVal(const std::any &);
   bool isEqual(const std::any &, const std::any &);

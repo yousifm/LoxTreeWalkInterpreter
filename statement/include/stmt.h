@@ -1,6 +1,7 @@
 #pragma once
 
 #include "expr.h"
+#include <vector>
 
 namespace Stmt {
 
@@ -45,6 +46,16 @@ public:
 private:
   Token _name;
   Expr::Expr *_init;
+};
+
+class Block : public Stmt {
+public:
+  Block(std::vector<const Stmt *> _statements);
+  void accept(StmtVisitor *) const;
+
+  const std::vector<const Stmt *>& statements() const { return _statements; }
+private:
+  std::vector<const Stmt *> _statements;
 };
 
 } // namespace Stmt

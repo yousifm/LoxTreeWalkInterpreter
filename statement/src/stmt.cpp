@@ -20,4 +20,10 @@ void VarStmt::accept(StmtVisitor *visitor) const {
   visitor->visitVarStmt(this);
 }
 
+Block::Block(std::vector<const Stmt*> statements) : _statements(std::move(statements)) {}
+
+void Block::accept(StmtVisitor* visitor) const {
+  visitor->visitBlock(this);
+}
+
 } // namespace Stmt

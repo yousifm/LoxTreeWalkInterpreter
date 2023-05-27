@@ -31,12 +31,16 @@ void Interpreter::visitPrintStmt(const Stmt::PrintStmt *stmt) {
 
 void Interpreter::visitVarStmt(const Stmt::VarStmt *stmt) {
   std::any val = nullptr;
-  
+
   if (stmt->init() != nullptr) {
     val = eval(stmt->init());
   }
 
   _environment.define(stmt->name().lexeme(), val);
+}
+
+void Interpreter::visitBlock(const Stmt::Block *block) {
+  executeBlock(block->statements(), Environment{_environment});
 }
 
 void Interpreter::visitLiteral(const Expr::LiteralExpr *expr) {
@@ -128,16 +132,37 @@ void Interpreter::visitTernary(const Expr::TernaryExpr *expr) {
   }
 }
 
-void Interpreter::visitVariable(const Expr::VariableExpr* expr) {
+void Interpreter::visitVariable(const Expr::VariableExpr *expr) {
   _value = _environment.get(expr->name());
 }
 
-void Interpreter::visitAssign(const Expr::AssignExpr* expr) {
+void Interpreter::visitAssign(const Expr::AssignExpr *expr) {
   evalutate(expr->value());
   _environment.assign(expr->name(), _value);
 }
 
 void Interpreter::evalutate(const Expr::Expr *expr) { expr->accept(this); }
+
+void Interpreter::execute(const Stmt::Stmt *statement) {
+  statement->accept(this);
+}
+
+void Interpreter::executeBlock(
+    const std::vector<const Stmt::Stmt *> &statements, Environment env) {
+  Environment previous = _environment;
+
+  try {
+    _environment = env;
+
+    for (const Stmt::Stmt *statement : statements) {
+      execute(statement);
+    }
+    _environment = previous;
+  } catch (RuntimeError err) {
+    _environment = previous;
+    throw err;
+  }
+}
 
 void Interpreter::enforceDouble(Token op, const std::any &val) {
   if (isOfType<double>(val))
