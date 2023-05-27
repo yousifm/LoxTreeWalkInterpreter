@@ -24,6 +24,10 @@ public:
 
   std::any get(Token name) const {
     if (_values.contains(name.lexeme())) {
+      std::any val = _values.at(name.lexeme());
+      if (val.type() == typeid(std::monostate()) || val.type() == typeid(nullptr)) {
+        throw RuntimeError(name, "Undefined variable '" + name.lexeme() + "'.");
+      }
       return _values.at(name.lexeme());
     } else if (_enclosing != nullptr) {
       return _enclosing->get(name);
