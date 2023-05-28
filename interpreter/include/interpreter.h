@@ -16,6 +16,7 @@ public:
   void visitPrintStmt(const Stmt::PrintStmt *) override;
   void visitVarStmt(const Stmt::VarStmt *) override;
   void visitBlock(const Stmt::Block *) override;
+  void visitIfStmt(const Stmt::IfStmt *) override;
 
   void visitGrouping(const Expr::GroupingExpr *) override;
   void visitUnary(const Expr::UnaryExpr *) override;

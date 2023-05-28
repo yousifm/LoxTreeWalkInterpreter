@@ -43,6 +43,14 @@ void Interpreter::visitBlock(const Stmt::Block *block) {
   executeBlock(block->statements(), Environment{_environment});
 }
 
+void Interpreter::visitIfStmt(const Stmt::IfStmt *stmt) {
+  if (isTruthyExpr(stmt->condition())) {
+    execute(stmt->thenBranch());
+  } else {
+    execute(stmt->elseBranch());
+  }
+}
+
 void Interpreter::visitLiteral(const Expr::LiteralExpr *expr) {
   _value = std::visit(Token::variant_value_getter(), expr->value());
 }

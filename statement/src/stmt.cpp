@@ -20,10 +20,17 @@ void VarStmt::accept(StmtVisitor *visitor) const {
   visitor->visitVarStmt(this);
 }
 
-Block::Block(std::vector<const Stmt*> statements) : _statements(std::move(statements)) {}
+Block::Block(std::vector<const Stmt *> statements)
+    : _statements(std::move(statements)) {}
 
-void Block::accept(StmtVisitor* visitor) const {
-  visitor->visitBlock(this);
-}
+void Block::accept(StmtVisitor *visitor) const { visitor->visitBlock(this); }
+
+IfStmt::IfStmt(Expr::Expr *condition, Stmt *thenBranch)
+    : _condition(condition), _thenBranch(thenBranch) {}
+
+IfStmt::IfStmt(Expr::Expr *condition, Stmt *thenBranch, Stmt *elseBranch)
+    : _condition(condition), _thenBranch(thenBranch), _elseBranch(elseBranch) {}
+
+void IfStmt::accept(StmtVisitor *visitor) const { visitor->visitIfStmt(this); }
 
 } // namespace Stmt

@@ -18,6 +18,20 @@ std::vector<Stmt::Stmt *> Parser::parse() {
   return statements;
 }
 
+Stmt::Stmt *Parser::ifStatement() {
+  consume(LEFT_PAREN, "Expect '(' after if.");
+  Expr::Expr *condition = expression();
+  consume(RIGHT_PAREN, "Expect ')'.");
+
+  Stmt::Stmt *thenBranch = statement();
+  Stmt::Stmt *elseBranch = nullptr;
+  if (advanceIfMatch({ELSE})) {
+    elseBranch = statement();
+  }
+
+  return new Stmt::IfStmt(condition, thenBranch, elseBranch);  
+}
+
 Stmt::Stmt *Parser::declaration() {
   try {
     if (advanceIfMatch({VAR}))
@@ -47,6 +61,8 @@ Stmt::Stmt *Parser::statement() {
     return printStatement();
   if (advanceIfMatch({LEFT_BRACE}))
     return new Stmt::Block(block());
+  if (advanceIfMatch({IF}))
+    return ifStatement();
 
   return expressionStatement();
 }

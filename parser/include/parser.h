@@ -16,6 +16,7 @@ public:
   std::vector<Stmt::Stmt *> parse();
 
 private:
+  Stmt::Stmt *ifStatement();
   Stmt::Stmt *declaration();
   Stmt::Stmt *varDeclaration();
   Stmt::Stmt *statement();
