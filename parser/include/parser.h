@@ -16,13 +16,14 @@ public:
   std::vector<Stmt::Stmt *> parse();
 
 private:
-  Stmt::Stmt *ifStatement();
   Stmt::Stmt *declaration();
   Stmt::Stmt *varDeclaration();
   Stmt::Stmt *statement();
   Stmt::Stmt *printStatement();
   Stmt::Stmt *expressionStatement();
   std::vector<const Stmt::Stmt *> block();
+  Stmt::Stmt *ifStatement();
+  Stmt::Stmt *whileStatement();
 
   Expr::Expr *expression();
   Expr::Expr *assignment();

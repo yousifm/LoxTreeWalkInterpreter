@@ -33,4 +33,9 @@ IfStmt::IfStmt(Expr::Expr *condition, Stmt *thenBranch, Stmt *elseBranch)
 
 void IfStmt::accept(StmtVisitor *visitor) const { visitor->visitIfStmt(this); }
 
+
+WhileStmt::WhileStmt(Expr::Expr* condition, Stmt *body) : _condition(condition), _body(body) {}
+
+void WhileStmt::accept(StmtVisitor *visitor) const { visitor->visitWhileStmt(this); }
+
 } // namespace Stmt

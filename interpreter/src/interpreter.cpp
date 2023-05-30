@@ -40,7 +40,7 @@ void Interpreter::visitVarStmt(const Stmt::VarStmt *stmt) {
 }
 
 void Interpreter::visitBlock(const Stmt::Block *block) {
-  executeBlock(block->statements(), Environment{_environment});
+  executeBlock(block->statements());
 }
 
 void Interpreter::visitIfStmt(const Stmt::IfStmt *stmt) {
@@ -48,6 +48,12 @@ void Interpreter::visitIfStmt(const Stmt::IfStmt *stmt) {
     execute(stmt->thenBranch());
   } else {
     execute(stmt->elseBranch());
+  }
+}
+
+void Interpreter::visitWhileStmt(const Stmt::WhileStmt* stmt) {
+  while (isTruthyExpr(stmt->condition())) {
+    execute(stmt->body());
   }
 }
 
@@ -171,18 +177,19 @@ void Interpreter::execute(const Stmt::Stmt *statement) {
 }
 
 void Interpreter::executeBlock(
-    const std::vector<const Stmt::Stmt *> &statements, Environment env) {
-  Environment previous = _environment;
-
+    const std::vector<const Stmt::Stmt *> &statements) {
+  Environment outer_env = _environment;
+  Environment inner_env = Environment{&outer_env};
+  
   try {
-    _environment = env;
+    _environment = inner_env;
 
     for (const Stmt::Stmt *statement : statements) {
       execute(statement);
     }
-    _environment = previous;
+    _environment = outer_env;
   } catch (RuntimeError err) {
-    _environment = previous;
+    _environment = outer_env;
     throw err;
   }
 }

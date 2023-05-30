@@ -75,4 +75,17 @@ private:
   const Stmt *_elseBranch;
 };
 
+class WhileStmt : public Stmt {
+public:
+  explicit WhileStmt(Expr::Expr*, Stmt*);
+
+  void accept(StmtVisitor*) const;
+
+  const Expr::Expr *condition() const {return _condition;}
+  const Stmt *body() const {return _body;}
+private:
+  Expr::Expr* _condition;
+  Stmt* _body;
+};
+
 } // namespace Stmt
