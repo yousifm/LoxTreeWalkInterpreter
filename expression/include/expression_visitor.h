@@ -13,6 +13,7 @@ public:
   virtual void visitTernary(const TernaryExpr*) = 0;
   virtual void visitVariable(const VariableExpr*) = 0;
   virtual void visitAssign(const AssignExpr*) = 0;
+  virtual void visitLogic(const LogicExpr*) = 0;
 };
 
 } // namespace Expr

@@ -27,6 +27,7 @@ private:
   Expr::Expr *expression();
   Expr::Expr *assignment();
   Expr::Expr *ternary();
+  Expr::Expr *logic();
   Expr::Expr *equality();
   Expr::Expr *comparison();
   Expr::Expr *term();

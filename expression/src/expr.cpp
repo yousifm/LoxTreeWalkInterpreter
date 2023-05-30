@@ -35,4 +35,8 @@ void AssignExpr::accept(ExprVisitor* visitor) const {
   visitor->visitAssign(this);
 }
 
+void LogicExpr::accept(ExprVisitor* visitor) const {
+  visitor->visitLogic(this);
+}
+
 } // namespace Expr

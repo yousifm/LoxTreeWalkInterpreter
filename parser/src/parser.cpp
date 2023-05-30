@@ -112,15 +112,28 @@ Expr::Expr *Parser::assignment() {
 }
 
 Expr::Expr *Parser::ternary() {
-  Expr::Expr *expr = equality();
+  Expr::Expr *expr = logic();
 
   if (advanceIfMatch({QUESTION_MARK})) {
     Expr::Expr *first = expression();
 
-    consume(SEMICOLON, "Expected semicolon");
+    consume(SEMICOLON, "Expected ':' for ternary expression");
 
     Expr::Expr *second = expression();
     expr = new Expr::TernaryExpr(expr, first, second);
+  }
+
+  return expr;
+}
+
+Expr::Expr *Parser::logic() {
+  Expr::Expr *expr = equality();
+
+  if (advanceIfMatch({OR, AND})) {
+    Token op = previous();
+    Expr::Expr* second = equality();
+    
+    expr = new Expr::LogicExpr(op, expr, second);
   }
 
   return expr;

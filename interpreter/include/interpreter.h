@@ -25,6 +25,7 @@ public:
   void visitTernary(const Expr::TernaryExpr *) override;
   void visitVariable(const Expr::VariableExpr *) override;
   void visitAssign(const Expr::AssignExpr *) override;
+  void visitLogic(const Expr::LogicExpr *) override;
 
 private:
   void evalutate(const Expr::Expr *);

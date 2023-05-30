@@ -149,6 +149,21 @@ void Interpreter::visitAssign(const Expr::AssignExpr *expr) {
   _environment.assign(expr->name(), _value);
 }
 
+void Interpreter::visitLogic(const Expr::LogicExpr *expr) {
+  switch (expr->op().type()) {
+    case OR:
+      if (!isTruthyExpr(expr->first())) _value = isTruthyExpr(expr->second());
+      else _value = true;
+      break;
+    case AND:
+      if (isTruthyExpr(expr->first())) _value = isTruthyExpr(expr->second());
+      else _value = false;
+      break;
+    default:
+      throw RuntimeError(expr->op(), "Invalid operator for logic expression");
+  }
+}
+
 void Interpreter::evalutate(const Expr::Expr *expr) { expr->accept(this); }
 
 void Interpreter::execute(const Stmt::Stmt *statement) {
@@ -189,7 +204,12 @@ bool Interpreter::isTruthyVal(const std::any &val) {
 
   if (isOfType<bool>(val))
     return std::any_cast<bool>(val);
-  return true;
+  else if (isOfType<double>(val))
+    return std::any_cast<double>(val) != 0;
+  else if (isOfType<std::string>(val))
+    return std::any_cast<std::string>(val).size() != 0;
+
+  throw RuntimeError(Token{END_OF_FILE, ""}, "Cannot determine if value is truthy");
 }
 
 bool Interpreter::isEqual(const std::any &first, const std::any &second) {
