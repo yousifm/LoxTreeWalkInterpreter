@@ -88,4 +88,21 @@ private:
   Stmt* _body;
 };
 
+class ForStmt : public Stmt {
+public:
+  explicit ForStmt(Stmt*, Expr::Expr*, Expr::Expr*, Stmt*);
+  
+  void accept(StmtVisitor*) const;
+
+  const Stmt* init() const {return _init;}
+  const Expr::Expr* condition() const {return _condition;}
+  const Expr::Expr* after() const {return _after;}
+  const Stmt* body() const {return _body;}
+private:
+  Stmt* _init;
+  Expr::Expr* _condition;
+  Expr::Expr* _after;
+  Stmt* _body;
+};
+
 } // namespace Stmt

@@ -51,6 +51,8 @@ Stmt::Stmt *Parser::statement() {
     return ifStatement();
   if (advanceIfMatch({WHILE}))
     return whileStatement();
+  if (advanceIfMatch({FOR}))
+    return forStatement();
 
   return expressionStatement();
 }
@@ -99,6 +101,26 @@ Stmt::Stmt *Parser::whileStatement() {
 
   Stmt::Stmt *body = statement();
   return new Stmt::WhileStmt(condition, body);
+}
+
+Stmt::Stmt* Parser::forStatement() {
+  consume(LEFT_PAREN, "Expect '(' after for.");
+  Stmt::Stmt* init = nullptr;
+  if (!advanceIfMatch({SEMICOLON})) init = declaration();
+  Expr::Expr* condition = nullptr;
+  if (!advanceIfMatch({SEMICOLON})) {
+    condition = expression();
+    consume(SEMICOLON, "Expect ';'.");
+  }
+  Expr::Expr* after = nullptr;
+  if (!advanceIfMatch({RIGHT_PAREN})) {
+    after = expression();
+    consume(RIGHT_PAREN, "Expect ')'.");
+  }
+
+  Stmt::Stmt* body = statement();
+
+  return new Stmt::ForStmt(init, condition, after, body);
 }
 
 Expr::Expr *Parser::expression() { return assignment(); }

@@ -12,6 +12,7 @@ public:
   virtual void visitBlock(const Block *) = 0;
   virtual void visitIfStmt(const IfStmt *) = 0;
   virtual void visitWhileStmt(const WhileStmt *) = 0;
+  virtual void visitForStmt(const ForStmt *) = 0;
 };
 
 } // namespace Stmt

@@ -18,6 +18,7 @@ public:
   void visitBlock(const Stmt::Block *) override;
   void visitIfStmt(const Stmt::IfStmt *) override;
   void visitWhileStmt(const Stmt::WhileStmt *) override;
+  void visitForStmt(const Stmt::ForStmt *) override;
 
   void visitGrouping(const Expr::GroupingExpr *) override;
   void visitUnary(const Expr::UnaryExpr *) override;

@@ -33,9 +33,19 @@ IfStmt::IfStmt(Expr::Expr *condition, Stmt *thenBranch, Stmt *elseBranch)
 
 void IfStmt::accept(StmtVisitor *visitor) const { visitor->visitIfStmt(this); }
 
+WhileStmt::WhileStmt(Expr::Expr *condition, Stmt *body)
+    : _condition(condition), _body(body) {}
 
-WhileStmt::WhileStmt(Expr::Expr* condition, Stmt *body) : _condition(condition), _body(body) {}
+void WhileStmt::accept(StmtVisitor *visitor) const {
+  visitor->visitWhileStmt(this);
+}
 
-void WhileStmt::accept(StmtVisitor *visitor) const { visitor->visitWhileStmt(this); }
+ForStmt::ForStmt(Stmt *init, Expr::Expr *condition, Expr::Expr *after,
+                 Stmt *body)
+    : _init(init), _condition(condition), _after(after), _body(body) {}
+
+void ForStmt::accept(StmtVisitor* visitor) const {
+  visitor->visitForStmt(this);
+}
 
 } // namespace Stmt

@@ -24,6 +24,7 @@ private:
   std::vector<const Stmt::Stmt *> block();
   Stmt::Stmt *ifStatement();
   Stmt::Stmt *whileStatement();
+  Stmt::Stmt *forStatement();
 
   Expr::Expr *expression();
   Expr::Expr *assignment();

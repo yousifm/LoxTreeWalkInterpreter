@@ -57,6 +57,14 @@ void Interpreter::visitWhileStmt(const Stmt::WhileStmt* stmt) {
   }
 }
 
+void Interpreter::visitForStmt(const Stmt::ForStmt* stmt) {
+  if (stmt->init() != nullptr) execute(stmt->init());
+  while (stmt->condition() == nullptr || isTruthyExpr(stmt->condition())) {
+    execute(stmt->body());
+    if (stmt->after() != nullptr) evalutate(stmt->after());
+  }
+}
+
 void Interpreter::visitLiteral(const Expr::LiteralExpr *expr) {
   _value = std::visit(Token::variant_value_getter(), expr->value());
 }
