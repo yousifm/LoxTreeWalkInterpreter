@@ -39,4 +39,8 @@ void LogicExpr::accept(ExprVisitor* visitor) const {
   visitor->visitLogic(this);
 }
 
+void CallExpr::accept(ExprVisitor* visitor) const {
+  visitor->visitCall(this);
+}
+
 } // namespace Expr

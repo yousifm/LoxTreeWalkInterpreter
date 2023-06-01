@@ -35,6 +35,7 @@ private:
   Expr::Expr *term();
   Expr::Expr *factor();
   Expr::Expr *unary();
+  Expr::Expr *call();
   Expr::Expr *primary();
 
   bool advanceIfMatch(std::initializer_list<TOKEN_TYPE>);

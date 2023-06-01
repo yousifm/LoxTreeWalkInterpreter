@@ -1,9 +1,11 @@
 #pragma once
 
+#include <token.h>
+
 #include <any>
 #include <memory>
-#include <token.h>
 #include <utility>
+#include <vector>
 
 namespace Expr {
 
@@ -132,6 +134,23 @@ private:
   Token _op;
   Expr *_first;
   Expr *_second;
+};
+
+class CallExpr : public Expr {
+public:
+  explicit CallExpr(Expr *callee, Token paren,
+                    const std::vector<Expr *> &arguments)
+      : _callee(callee), _paren(paren), _arguments(arguments){};
+  void accept(ExprVisitor *) const override;
+
+  const Expr *callee() const { return _callee; }
+  const Token paren() const { return _paren; }
+  const std::vector<Expr *> arguments() const { return _arguments; }
+
+private:
+  Expr *_callee;
+  Token _paren;
+  const std::vector<Expr *> _arguments;
 };
 
 } // namespace Expr

@@ -2,6 +2,7 @@
 #include "lox.h"
 #include "runtime_error.h"
 #include "token_type.h"
+#include "lox_callable.h"
 
 #include <any>
 
@@ -51,17 +52,19 @@ void Interpreter::visitIfStmt(const Stmt::IfStmt *stmt) {
   }
 }
 
-void Interpreter::visitWhileStmt(const Stmt::WhileStmt* stmt) {
+void Interpreter::visitWhileStmt(const Stmt::WhileStmt *stmt) {
   while (isTruthyExpr(stmt->condition())) {
     execute(stmt->body());
   }
 }
 
-void Interpreter::visitForStmt(const Stmt::ForStmt* stmt) {
-  if (stmt->init() != nullptr) execute(stmt->init());
+void Interpreter::visitForStmt(const Stmt::ForStmt *stmt) {
+  if (stmt->init() != nullptr)
+    execute(stmt->init());
   while (stmt->condition() == nullptr || isTruthyExpr(stmt->condition())) {
     execute(stmt->body());
-    if (stmt->after() != nullptr) evalutate(stmt->after());
+    if (stmt->after() != nullptr)
+      evalutate(stmt->after());
   }
 }
 
@@ -165,17 +168,37 @@ void Interpreter::visitAssign(const Expr::AssignExpr *expr) {
 
 void Interpreter::visitLogic(const Expr::LogicExpr *expr) {
   switch (expr->op().type()) {
-    case OR:
-      if (!isTruthyExpr(expr->first())) _value = isTruthyExpr(expr->second());
-      else _value = true;
-      break;
-    case AND:
-      if (isTruthyExpr(expr->first())) _value = isTruthyExpr(expr->second());
-      else _value = false;
-      break;
-    default:
-      throw RuntimeError(expr->op(), "Invalid operator for logic expression");
+  case OR:
+    if (!isTruthyExpr(expr->first()))
+      _value = isTruthyExpr(expr->second());
+    else
+      _value = true;
+    break;
+  case AND:
+    if (isTruthyExpr(expr->first()))
+      _value = isTruthyExpr(expr->second());
+    else
+      _value = false;
+    break;
+  default:
+    throw RuntimeError(expr->op(), "Invalid operator for logic expression");
   }
+}
+
+void Interpreter::visitCall(const Expr::CallExpr *expr) {
+  std::any callee = eval(expr->callee());
+
+  std::vector<std::any> args;
+  for (const Expr::Expr *arg : expr->arguments()) {
+    args.push_back(eval(arg));
+  }
+
+  if (callee.type() != typeid(LoxCallable))
+    throw RuntimeError(expr->paren(), "Can only call function or classes.");
+
+  LoxCallable* function = std::any_cast<LoxCallable*>(callee);
+
+  _value = function->call(this, args);
 }
 
 void Interpreter::evalutate(const Expr::Expr *expr) { expr->accept(this); }
@@ -188,7 +211,7 @@ void Interpreter::executeBlock(
     const std::vector<const Stmt::Stmt *> &statements) {
   Environment outer_env = _environment;
   Environment inner_env = Environment{&outer_env};
-  
+
   try {
     _environment = inner_env;
 
@@ -224,7 +247,8 @@ bool Interpreter::isTruthyVal(const std::any &val) {
   else if (isOfType<std::string>(val))
     return std::any_cast<std::string>(val).size() != 0;
 
-  throw RuntimeError(Token{END_OF_FILE, ""}, "Cannot determine if value is truthy");
+  throw RuntimeError(Token{END_OF_FILE, ""},
+                     "Cannot determine if value is truthy");
 }
 
 bool Interpreter::isEqual(const std::any &first, const std::any &second) {

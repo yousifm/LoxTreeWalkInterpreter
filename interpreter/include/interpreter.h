@@ -28,6 +28,7 @@ public:
   void visitVariable(const Expr::VariableExpr *) override;
   void visitAssign(const Expr::AssignExpr *) override;
   void visitLogic(const Expr::LogicExpr *) override;
+  void visitCall(const Expr::CallExpr *) override;
 
 private:
   void evalutate(const Expr::Expr *);
