@@ -106,7 +106,10 @@ Stmt::Stmt *Parser::whileStatement() {
 Stmt::Stmt* Parser::forStatement() {
   consume(LEFT_PAREN, "Expect '(' after for.");
   Stmt::Stmt* init = nullptr;
-  if (!advanceIfMatch({SEMICOLON})) init = declaration();
+  if (!advanceIfMatch({SEMICOLON})) {
+    if (advanceIfMatch({VAR})) init = varDeclaration();
+    else init = expressionStatement();
+  }
   Expr::Expr* condition = nullptr;
   if (!advanceIfMatch({SEMICOLON})) {
     condition = expression();
