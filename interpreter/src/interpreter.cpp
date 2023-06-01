@@ -1,15 +1,15 @@
 #include "interpreter.h"
 #include "lox.h"
 #include "lox_callable.h"
+#include "native_func.h"
 #include "runtime_error.h"
 #include "token_type.h"
-#include "native_func.h"
 
 #include <any>
-#include <format>
+#include <sstream>
 
 Interpreter::Interpreter() {
-  globals.define("clock", (std::any) Clock());
+  globals.define("clock", (std::any)Clock());
   _environment = globals;
 }
 
@@ -75,7 +75,7 @@ void Interpreter::visitForStmt(const Stmt::ForStmt *stmt) {
   }
 }
 
-void Interpreter::visitFunctionStmt(const Stmt::FunctionStmt* stmt) {
+void Interpreter::visitFunctionStmt(const Stmt::FunctionStmt *stmt) {
   LoxFunction function = LoxFunction(*stmt);
   _environment.define(stmt->name().lexeme(), function);
 }
@@ -204,17 +204,17 @@ void Interpreter::visitCall(const Expr::CallExpr *expr) {
   for (const Expr::Expr *arg : expr->arguments()) {
     args.push_back(eval(arg));
   }
-  
+
   if (callee.type() != typeid(LoxFunction))
     throw RuntimeError(expr->paren(), "Can only call function or classes.");
-  
+
   LoxFunction function = std::any_cast<LoxFunction>(callee);
 
   if (args.size() != function.arity()) {
-    throw RuntimeError(expr->paren(), "Expected " +
-                                          std::format("%d", function.arity()) +
-                                          " arguments but got " +
-                                          std::format("%d", args.size()) + ".");
+    std::stringstream error;
+    error << "Expected" << function.arity() << "arguments but got "
+          << args.size() << ".";
+    throw RuntimeError(expr->paren(), error.str());
   }
   _value = function.call(this, args);
 }
