@@ -4,11 +4,14 @@
 #include "stmt_visitor.h"
 #include <environment.h>
 #include <expression_visitor.h>
+#include <lox_function.h>
 
 #include <vector>
 
 class Interpreter : public Expr::ExprVisitor, public Stmt::StmtVisitor {
 public:
+  Interpreter();
+
   std::any eval(const Expr::Expr *);
   void interpret(const std::vector<Stmt::Stmt *>);
 
@@ -19,6 +22,7 @@ public:
   void visitIfStmt(const Stmt::IfStmt *) override;
   void visitWhileStmt(const Stmt::WhileStmt *) override;
   void visitForStmt(const Stmt::ForStmt *) override;
+  void visitFunctionStmt(const Stmt::FunctionStmt *) override;
 
   void visitGrouping(const Expr::GroupingExpr *) override;
   void visitUnary(const Expr::UnaryExpr *) override;
@@ -30,10 +34,12 @@ public:
   void visitLogic(const Expr::LogicExpr *) override;
   void visitCall(const Expr::CallExpr *) override;
 
+  friend class LoxFunction;
+
 private:
   void evalutate(const Expr::Expr *);
   void execute(const Stmt::Stmt *);
-  void executeBlock(const std::vector<const Stmt::Stmt *> &);
+  void executeBlock(Environment, const std::vector<const Stmt::Stmt *> &);
   void enforceDouble(Token, const std::any &);
   bool isTruthyExpr(const Expr::Expr *);
   bool isTruthyVal(const std::any &);
@@ -43,4 +49,5 @@ private:
 
   std::any _value;
   Environment _environment;
+  Environment globals;
 };

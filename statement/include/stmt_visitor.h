@@ -13,6 +13,7 @@ public:
   virtual void visitIfStmt(const IfStmt *) = 0;
   virtual void visitWhileStmt(const WhileStmt *) = 0;
   virtual void visitForStmt(const ForStmt *) = 0;
+  virtual void visitFunctionStmt(const FunctionStmt *) = 0;
 };
 
 } // namespace Stmt

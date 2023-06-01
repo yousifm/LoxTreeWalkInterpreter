@@ -1,11 +1,13 @@
 #pragma once
 
-#include <interpreter.h>
-
 #include <any>
 #include <vector>
 
+class Interpreter;
+
 class LoxCallable {
 public:
-  virtual std::any call(const Interpreter* interpreter, const std::vector<std::any>& arguments) = 0;
+  virtual std::any call(Interpreter*, const std::vector<std::any>&) const = 0;
+
+  virtual size_t arity() const = 0;
 };

@@ -105,4 +105,19 @@ private:
   Stmt* _body;
 };
 
+class FunctionStmt : public Stmt {
+public:
+  explicit FunctionStmt(Token, std::vector<Token>&, std::vector<const Stmt*>&);
+  
+  void accept(StmtVisitor*) const;
+
+  const Token name() const {return _name;}
+  const std::vector<Token>& params() const {return _params;}
+  const std::vector<const Stmt*>& body() const {return _body;}
+private:
+  Token _name;
+  std::vector<Token> _params;
+  std::vector<const Stmt*> _body;
+};
+
 } // namespace Stmt

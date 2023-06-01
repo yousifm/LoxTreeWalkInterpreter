@@ -1,10 +1,17 @@
 #include "interpreter.h"
 #include "lox.h"
+#include "lox_callable.h"
 #include "runtime_error.h"
 #include "token_type.h"
-#include "lox_callable.h"
+#include "native_func.h"
 
 #include <any>
+#include <format>
+
+Interpreter::Interpreter() {
+  globals.define("clock", (std::any) Clock());
+  _environment = globals;
+}
 
 void Interpreter::interpret(const std::vector<Stmt::Stmt *> statements) {
   try {
@@ -41,7 +48,7 @@ void Interpreter::visitVarStmt(const Stmt::VarStmt *stmt) {
 }
 
 void Interpreter::visitBlock(const Stmt::Block *block) {
-  executeBlock(block->statements());
+  executeBlock(_environment, block->statements());
 }
 
 void Interpreter::visitIfStmt(const Stmt::IfStmt *stmt) {
@@ -66,6 +73,11 @@ void Interpreter::visitForStmt(const Stmt::ForStmt *stmt) {
     if (stmt->after() != nullptr)
       evalutate(stmt->after());
   }
+}
+
+void Interpreter::visitFunctionStmt(const Stmt::FunctionStmt* stmt) {
+  LoxFunction function = LoxFunction(*stmt);
+  _environment.define(stmt->name().lexeme(), function);
 }
 
 void Interpreter::visitLiteral(const Expr::LiteralExpr *expr) {
@@ -192,13 +204,19 @@ void Interpreter::visitCall(const Expr::CallExpr *expr) {
   for (const Expr::Expr *arg : expr->arguments()) {
     args.push_back(eval(arg));
   }
-
-  if (callee.type() != typeid(LoxCallable))
+  
+  if (callee.type() != typeid(LoxFunction))
     throw RuntimeError(expr->paren(), "Can only call function or classes.");
+  
+  LoxFunction function = std::any_cast<LoxFunction>(callee);
 
-  LoxCallable* function = std::any_cast<LoxCallable*>(callee);
-
-  _value = function->call(this, args);
+  if (args.size() != function.arity()) {
+    throw RuntimeError(expr->paren(), "Expected " +
+                                          std::format("%d", function.arity()) +
+                                          " arguments but got " +
+                                          std::format("%d", args.size()) + ".");
+  }
+  _value = function.call(this, args);
 }
 
 void Interpreter::evalutate(const Expr::Expr *expr) { expr->accept(this); }
@@ -208,19 +226,17 @@ void Interpreter::execute(const Stmt::Stmt *statement) {
 }
 
 void Interpreter::executeBlock(
-    const std::vector<const Stmt::Stmt *> &statements) {
-  Environment outer_env = _environment;
-  Environment inner_env = Environment{&outer_env};
-
+    Environment env, const std::vector<const Stmt::Stmt *> &statements) {
+  Environment prev = _environment;
   try {
-    _environment = inner_env;
+    _environment = env;
 
     for (const Stmt::Stmt *statement : statements) {
       execute(statement);
     }
-    _environment = outer_env;
+    _environment = prev;
   } catch (RuntimeError err) {
-    _environment = outer_env;
+    _environment = prev;
     throw err;
   }
 }

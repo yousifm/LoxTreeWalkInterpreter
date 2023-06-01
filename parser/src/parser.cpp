@@ -22,6 +22,8 @@ Stmt::Stmt *Parser::declaration() {
   try {
     if (advanceIfMatch({VAR}))
       return varDeclaration();
+    else if (advanceIfMatch({FUN}))
+      return funDeclaration();
 
     return statement();
   } catch (Exception error) {
@@ -40,6 +42,26 @@ Stmt::Stmt *Parser::varDeclaration() {
 
   consume(SEMICOLON, "Expect ';' after variable declaration.");
   return new Stmt::VarStmt(name, initializer);
+}
+
+Stmt::Stmt *Parser::funDeclaration() {
+  Token name = consume(IDENTIFIER, "Expect function name.");
+  consume(LEFT_PAREN, "Expect '(' after function name.");
+  std::vector<Token> params;
+  if (!check(RIGHT_PAREN)) {
+    do {
+      if (params.size() >= 255) {
+        error(peek(), "Can not have more than 255 parameters.");
+      }
+
+      params.push_back(consume(IDENTIFIER, "Expect parameter name."));
+    } while (advanceIfMatch({COMMA}));
+  }
+  consume(RIGHT_PAREN, "Expect ')' after parameters.");
+
+  consume(LEFT_BRACE, "Expect '{' before function body.");
+  std::vector<const Stmt::Stmt *> body = block();
+  return new Stmt::FunctionStmt(name, params, body);
 }
 
 Stmt::Stmt *Parser::statement() {
@@ -91,37 +113,39 @@ Stmt::Stmt *Parser::ifStatement() {
     elseBranch = statement();
   }
 
-  return new Stmt::IfStmt(condition, thenBranch, elseBranch);  
+  return new Stmt::IfStmt(condition, thenBranch, elseBranch);
 }
 
 Stmt::Stmt *Parser::whileStatement() {
   consume(LEFT_PAREN, "Expect '(' after while.");
-  Expr::Expr* condition = expression();
+  Expr::Expr *condition = expression();
   consume(RIGHT_PAREN, "Expect ')' after expr.");
 
   Stmt::Stmt *body = statement();
   return new Stmt::WhileStmt(condition, body);
 }
 
-Stmt::Stmt* Parser::forStatement() {
+Stmt::Stmt *Parser::forStatement() {
   consume(LEFT_PAREN, "Expect '(' after for.");
-  Stmt::Stmt* init = nullptr;
+  Stmt::Stmt *init = nullptr;
   if (!advanceIfMatch({SEMICOLON})) {
-    if (advanceIfMatch({VAR})) init = varDeclaration();
-    else init = expressionStatement();
+    if (advanceIfMatch({VAR}))
+      init = varDeclaration();
+    else
+      init = expressionStatement();
   }
-  Expr::Expr* condition = nullptr;
+  Expr::Expr *condition = nullptr;
   if (!advanceIfMatch({SEMICOLON})) {
     condition = expression();
     consume(SEMICOLON, "Expect ';'.");
   }
-  Expr::Expr* after = nullptr;
+  Expr::Expr *after = nullptr;
   if (!advanceIfMatch({RIGHT_PAREN})) {
     after = expression();
     consume(RIGHT_PAREN, "Expect ')'.");
   }
 
-  Stmt::Stmt* body = statement();
+  Stmt::Stmt *body = statement();
 
   return new Stmt::ForStmt(init, condition, after, body);
 }
@@ -167,8 +191,8 @@ Expr::Expr *Parser::logic() {
 
   if (advanceIfMatch({OR, AND})) {
     Token op = previous();
-    Expr::Expr* second = equality();
-    
+    Expr::Expr *second = equality();
+
     expr = new Expr::LogicExpr(op, expr, second);
   }
 
@@ -234,15 +258,16 @@ Expr::Expr *Parser::unary() {
   return call();
 }
 
-Expr::Expr* Parser::call() {
-  Expr::Expr* expr = primary();
+Expr::Expr *Parser::call() {
+  Expr::Expr *expr = primary();
 
   while (true) {
     if (advanceIfMatch({LEFT_PAREN})) {
-      std::vector<Expr::Expr*> arguments;
+      std::vector<Expr::Expr *> arguments;
       if (!check(RIGHT_PAREN)) {
         do {
-          if (arguments.size() >= 255) error(peek(), "Can't have more than 255 arguments.");
+          if (arguments.size() >= 255)
+            error(peek(), "Can't have more than 255 arguments.");
           arguments.push_back(expression());
         } while (advanceIfMatch({COMMA}));
       }

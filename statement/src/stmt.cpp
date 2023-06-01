@@ -44,8 +44,16 @@ ForStmt::ForStmt(Stmt *init, Expr::Expr *condition, Expr::Expr *after,
                  Stmt *body)
     : _init(init), _condition(condition), _after(after), _body(body) {}
 
-void ForStmt::accept(StmtVisitor* visitor) const {
+void ForStmt::accept(StmtVisitor *visitor) const {
   visitor->visitForStmt(this);
+}
+
+FunctionStmt::FunctionStmt(Token name, std::vector<Token> &params,
+                           std::vector<const Stmt *> &body)
+    : _name(name), _params(std::move(params)), _body(std::move(body)) {}
+
+void FunctionStmt::accept(StmtVisitor *visitor) const {
+  visitor->visitFunctionStmt(this);
 }
 
 } // namespace Stmt

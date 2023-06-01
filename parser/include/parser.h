@@ -18,6 +18,7 @@ public:
 private:
   Stmt::Stmt *declaration();
   Stmt::Stmt *varDeclaration();
+  Stmt::Stmt *funDeclaration();
   Stmt::Stmt *statement();
   Stmt::Stmt *printStatement();
   Stmt::Stmt *expressionStatement();
