@@ -3,6 +3,7 @@
 #include "lox_callable.h"
 #include "native_func.h"
 #include "runtime_error.h"
+#include "return.h"
 #include "token_type.h"
 
 #include <any>
@@ -78,6 +79,15 @@ void Interpreter::visitForStmt(const Stmt::ForStmt *stmt) {
 void Interpreter::visitFunctionStmt(const Stmt::FunctionStmt *stmt) {
   LoxFunction function = LoxFunction(*stmt);
   _environment.define(stmt->name().lexeme(), function);
+}
+
+void Interpreter::visitReturnStmt(const Stmt::ReturnStmt *stmt) {
+  std::any val = nullptr;
+
+  if (stmt->expr() != nullptr)
+    val = eval(stmt->expr());
+  
+  throw Return(_value);
 }
 
 void Interpreter::visitLiteral(const Expr::LiteralExpr *expr) {

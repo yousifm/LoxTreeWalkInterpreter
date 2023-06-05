@@ -77,47 +77,66 @@ private:
 
 class WhileStmt : public Stmt {
 public:
-  explicit WhileStmt(Expr::Expr*, Stmt*);
+  explicit WhileStmt(Expr::Expr *, Stmt *);
 
-  void accept(StmtVisitor*) const;
+  void accept(StmtVisitor *) const;
 
-  const Expr::Expr *condition() const {return _condition;}
-  const Stmt *body() const {return _body;}
+  const Expr::Expr *condition() const { return _condition; }
+  const Stmt *body() const { return _body; }
+
 private:
-  Expr::Expr* _condition;
-  Stmt* _body;
+  Expr::Expr *_condition;
+  Stmt *_body;
 };
 
 class ForStmt : public Stmt {
 public:
-  explicit ForStmt(Stmt*, Expr::Expr*, Expr::Expr*, Stmt*);
-  
-  void accept(StmtVisitor*) const;
+  explicit ForStmt(Stmt *, Expr::Expr *, Expr::Expr *, Stmt *);
 
-  const Stmt* init() const {return _init;}
-  const Expr::Expr* condition() const {return _condition;}
-  const Expr::Expr* after() const {return _after;}
-  const Stmt* body() const {return _body;}
+  void accept(StmtVisitor *) const;
+
+  const Stmt *init() const { return _init; }
+  const Expr::Expr *condition() const { return _condition; }
+  const Expr::Expr *after() const { return _after; }
+  const Stmt *body() const { return _body; }
+
 private:
-  Stmt* _init;
-  Expr::Expr* _condition;
-  Expr::Expr* _after;
-  Stmt* _body;
+  Stmt *_init;
+  Expr::Expr *_condition;
+  Expr::Expr *_after;
+  Stmt *_body;
 };
 
 class FunctionStmt : public Stmt {
 public:
-  explicit FunctionStmt(Token, std::vector<Token>&, std::vector<const Stmt*>&);
-  
-  void accept(StmtVisitor*) const;
+  explicit FunctionStmt(Token, std::vector<Token> &,
+                        std::vector<const Stmt *> &);
 
-  const Token name() const {return _name;}
-  const std::vector<Token>& params() const {return _params;}
-  const std::vector<const Stmt*>& body() const {return _body;}
+  void accept(StmtVisitor *) const;
+
+  const Token name() const { return _name; }
+  const std::vector<Token> &params() const { return _params; }
+  const std::vector<const Stmt *> &body() const { return _body; }
+
 private:
   Token _name;
   std::vector<Token> _params;
-  std::vector<const Stmt*> _body;
+  std::vector<const Stmt *> _body;
+};
+
+class ReturnStmt : public Stmt {
+public:
+  ReturnStmt(Token ret) : _ret(ret), _expr(nullptr) {}
+  ReturnStmt(Token ret, Expr::Expr *expr) : _ret(ret), _expr(expr) {}
+
+  void accept(StmtVisitor *) const;
+
+  const Expr::Expr *expr() const { return _expr; }
+  const Token ret() const { return _ret; }
+
+private:
+  Token _ret;
+  Expr::Expr *_expr;
 };
 
 } // namespace Stmt

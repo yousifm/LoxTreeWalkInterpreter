@@ -14,6 +14,7 @@ public:
   virtual void visitWhileStmt(const WhileStmt *) = 0;
   virtual void visitForStmt(const ForStmt *) = 0;
   virtual void visitFunctionStmt(const FunctionStmt *) = 0;
+  virtual void visitReturnStmt(const ReturnStmt *) = 0;
 };
 
 } // namespace Stmt

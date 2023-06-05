@@ -26,6 +26,7 @@ private:
   Stmt::Stmt *ifStatement();
   Stmt::Stmt *whileStatement();
   Stmt::Stmt *forStatement();
+  Stmt::Stmt *returnStatement();
 
   Expr::Expr *expression();
   Expr::Expr *assignment();

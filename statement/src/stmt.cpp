@@ -56,4 +56,8 @@ void FunctionStmt::accept(StmtVisitor *visitor) const {
   visitor->visitFunctionStmt(this);
 }
 
+void ReturnStmt::accept(StmtVisitor *visitor) const {
+  visitor->visitReturnStmt(this);
+}
+
 } // namespace Stmt

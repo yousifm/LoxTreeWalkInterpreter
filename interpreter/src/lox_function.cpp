@@ -1,5 +1,6 @@
 #include <lox_function.h>
 #include <interpreter.h>
+#include <return.h>
 
 LoxFunction::LoxFunction(const Stmt::FunctionStmt declaration)
     : _declaration(declaration) {}
@@ -12,7 +13,12 @@ std::any LoxFunction::call(Interpreter *interpreter,
     environment.define(_declaration.params().at(i).lexeme(), args.at(i));
   }
   
-  interpreter->executeBlock(environment, _declaration.body());
+  try {
+    interpreter->executeBlock(environment, _declaration.body());
+  } catch (Return r) {
+    return r.value();
+  }
+
   return nullptr;
 }
 

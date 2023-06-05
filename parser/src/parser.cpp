@@ -67,6 +67,8 @@ Stmt::Stmt *Parser::funDeclaration() {
 Stmt::Stmt *Parser::statement() {
   if (advanceIfMatch({PRINT}))
     return printStatement();
+  if (advanceIfMatch({RETURN}))
+    return returnStatement();
   if (advanceIfMatch({LEFT_BRACE}))
     return new Stmt::Block(block());
   if (advanceIfMatch({IF}))
@@ -148,6 +150,17 @@ Stmt::Stmt *Parser::forStatement() {
   Stmt::Stmt *body = statement();
 
   return new Stmt::ForStmt(init, condition, after, body);
+}
+
+Stmt::Stmt *Parser::returnStatement() {
+  Token ret = previous();
+  Expr::Expr* value = nullptr;
+  if (!check(SEMICOLON)) {
+    value = expression();
+  }
+
+  consume(SEMICOLON, "Expected semicolon after return statement.");
+  return new Stmt::ReturnStmt(ret, value);
 }
 
 Expr::Expr *Parser::expression() { return assignment(); }
