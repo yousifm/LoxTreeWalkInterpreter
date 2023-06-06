@@ -2,15 +2,14 @@
 #include "lox.h"
 #include "lox_callable.h"
 #include "native_func.h"
-#include "runtime_error.h"
 #include "return.h"
+#include "runtime_error.h"
 #include "token_type.h"
 
-#include <any>
 #include <sstream>
 
 Interpreter::Interpreter() {
-  globals.define("clock", (std::any)Clock());
+  globals.define("clock", LoxType(std::shared_ptr<LoxCallable>(new Clock())));
   _environment = globals;
 }
 
@@ -24,7 +23,7 @@ void Interpreter::interpret(const std::vector<Stmt::Stmt *> statements) {
   }
 }
 
-std::any Interpreter::eval(const Expr::Expr *expr) {
+LoxType Interpreter::eval(const Expr::Expr *expr) {
   evalutate(expr);
   return _value;
 }
@@ -34,12 +33,12 @@ void Interpreter::visitExprStmt(const Stmt::ExprStmt *stmt) {
 }
 
 void Interpreter::visitPrintStmt(const Stmt::PrintStmt *stmt) {
-  std::any val = eval(stmt->expr());
-  Lox::print_any(val);
+  LoxType val = eval(stmt->expr());
+  std::cout << val << std::endl;
 }
 
 void Interpreter::visitVarStmt(const Stmt::VarStmt *stmt) {
-  std::any val = nullptr;
+  LoxType val;
 
   if (stmt->init() != nullptr) {
     val = eval(stmt->init());
@@ -77,21 +76,21 @@ void Interpreter::visitForStmt(const Stmt::ForStmt *stmt) {
 }
 
 void Interpreter::visitFunctionStmt(const Stmt::FunctionStmt *stmt) {
-  LoxFunction function = LoxFunction(*stmt);
+  LoxType function = std::shared_ptr<LoxCallable>(new LoxFunction(*stmt));
   _environment.define(stmt->name().lexeme(), function);
 }
 
 void Interpreter::visitReturnStmt(const Stmt::ReturnStmt *stmt) {
-  std::any val = nullptr;
+  LoxType val;
 
   if (stmt->expr() != nullptr)
     val = eval(stmt->expr());
-  
+
   throw Return(_value);
 }
 
 void Interpreter::visitLiteral(const Expr::LiteralExpr *expr) {
-  _value = std::visit(Token::variant_value_getter(), expr->value());
+  _value = expr->value();
 }
 
 void Interpreter::visitGrouping(const Expr::GroupingExpr *expr) {
@@ -103,7 +102,7 @@ void Interpreter::visitUnary(const Expr::UnaryExpr *expr) {
 
   switch (expr->op().type()) {
   case MINUS:
-    _value = -std::any_cast<double>(_value);
+    _value = -_value.getValue<double>();
     break;
   case BANG:
     _value = !isTruthyVal(_value);
@@ -116,55 +115,54 @@ void Interpreter::visitUnary(const Expr::UnaryExpr *expr) {
 
 void Interpreter::visitBinary(const Expr::BinaryExpr *expr) {
   evalutate(expr->left());
-  std::any left = _value;
+  LoxType left = _value;
   evalutate(expr->right());
-  std::any right = _value;
+  LoxType right = _value;
 
   switch (expr->op().type()) {
   case GREATER:
     enforceDouble(expr->op(), right);
-    _value = std::any_cast<double>(left) > std::any_cast<double>(right);
+    _value = left.getValue<double>() > right.getValue<double>();
     break;
   case GREATER_EQUAL:
     enforceDouble(expr->op(), right);
-    _value = std::any_cast<double>(left) >= std::any_cast<double>(right);
+    _value = left.getValue<double>() >= right.getValue<double>();
     break;
   case LESS:
     enforceDouble(expr->op(), right);
-    _value = std::any_cast<double>(left) < std::any_cast<double>(right);
+    _value = left.getValue<double>() < right.getValue<double>();
     break;
   case LESS_EQUAL:
     enforceDouble(expr->op(), right);
-    _value = std::any_cast<double>(left) <= std::any_cast<double>(right);
+    _value = left.getValue<double>() <= right.getValue<double>();
     break;
   case MINUS:
     enforceDouble(expr->op(), right);
-    _value = std::any_cast<double>(left) - std::any_cast<double>(right);
+    _value = left.getValue<double>() - right.getValue<double>();
     break;
   case PLUS:
-    if (isOfType<std::string>(left) && isOfType<std::string>(right)) {
-      _value =
-          std::any_cast<std::string>(left) + std::any_cast<std::string>(right);
-    } else if (isOfType<double>(left) && isOfType<double>(right)) {
-      _value = std::any_cast<double>(left) + std::any_cast<double>(right);
+    if (left.isType<std::string>() && right.isType<std::string>()) {
+      _value = left.getValue<std::string>() + right.getValue<std::string>();
+    } else if (left.isType<double>() && right.isType<double>()) {
+      _value = left.getValue<double>() + right.getValue<double>();
     } else {
       throw RuntimeError(expr->op(),
                          "Operands must both be numbers or strings");
     }
     break;
   case SLASH:
-    if (std::any_cast<double>(right) == 0)
+    if (right.getValue<double>() == 0)
       throw RuntimeError(expr->op(), "Division by Zero");
-    _value = std::any_cast<double>(left) / std::any_cast<double>(right);
+    _value = left.getValue<double>() / right.getValue<double>();
     break;
   case STAR:
-    _value = std::any_cast<double>(left) * std::any_cast<double>(right);
+    _value = left.getValue<double>() * right.getValue<double>();
     break;
   case BANG_EQUAL:
-    _value = !isEqual(left, right);
+    _value = left != right;
     break;
   case EQUAL_EQUAL:
-    _value = isEqual(left, right);
+    _value = left == right;
     break;
   default:
     throw RuntimeError(expr->op(), "Invalid operator for binary expression");
@@ -208,25 +206,25 @@ void Interpreter::visitLogic(const Expr::LogicExpr *expr) {
 }
 
 void Interpreter::visitCall(const Expr::CallExpr *expr) {
-  std::any callee = eval(expr->callee());
+  LoxType callee = eval(expr->callee());
 
-  std::vector<std::any> args;
+  std::vector<LoxType> args;
   for (const Expr::Expr *arg : expr->arguments()) {
     args.push_back(eval(arg));
   }
 
-  if (callee.type() != typeid(LoxFunction))
+  if (!callee.isType<LoxType::callable_ptr>())
     throw RuntimeError(expr->paren(), "Can only call function or classes.");
 
-  LoxFunction function = std::any_cast<LoxFunction>(callee);
+  LoxCallable *function = callee.getValue<LoxType::callable_ptr>().get();
 
-  if (args.size() != function.arity()) {
+  if (args.size() != function->arity()) {
     std::stringstream error;
-    error << "Expected" << function.arity() << "arguments but got "
+    error << "Expected " << function->arity() << " arguments but got "
           << args.size() << ".";
     throw RuntimeError(expr->paren(), error.str());
   }
-  _value = function.call(this, args);
+  _value = function->call(this, args);
 }
 
 void Interpreter::evalutate(const Expr::Expr *expr) { expr->accept(this); }
@@ -251,8 +249,8 @@ void Interpreter::executeBlock(
   }
 }
 
-void Interpreter::enforceDouble(Token op, const std::any &val) {
-  if (isOfType<double>(val))
+void Interpreter::enforceDouble(Token op, const LoxType &val) {
+  if (val.isType<double>())
     return;
   throw RuntimeError(op, "Operand must be a number.");
 }
@@ -262,39 +260,17 @@ bool Interpreter::isTruthyExpr(const Expr::Expr *expr) {
   return isTruthyVal(_value);
 }
 
-bool Interpreter::isTruthyVal(const std::any &val) {
-  if (!val.has_value())
+bool Interpreter::isTruthyVal(const LoxType &val) {
+  if (val.empty())
     return false;
 
-  if (isOfType<bool>(val))
-    return std::any_cast<bool>(val);
-  else if (isOfType<double>(val))
-    return std::any_cast<double>(val) != 0;
-  else if (isOfType<std::string>(val))
-    return std::any_cast<std::string>(val).size() != 0;
+  if (val.isType<bool>())
+    return val.getValue<bool>();
+  else if (val.isType<double>())
+    return val.getValue<double>() != 0;
+  else if (val.isType<std::string>())
+    return val.getValue<std::string>().size() != 0;
 
   throw RuntimeError(Token{END_OF_FILE, ""},
                      "Cannot determine if value is truthy");
-}
-
-bool Interpreter::isEqual(const std::any &first, const std::any &second) {
-  if (!first.has_value() && !second.has_value())
-    return true;
-  if (!first.has_value() || !second.has_value())
-    return false;
-
-  if (first.type() == second.type()) {
-    if (isOfType<std::string>(first)) {
-      return std::any_cast<std::string>(first) ==
-             std::any_cast<std::string>(second);
-    } else if (isOfType<double>(first)) {
-      return std::any_cast<double>(first) == std::any_cast<double>(second);
-    }
-  }
-
-  return false;
-}
-
-template <typename T> bool Interpreter::isOfType(const std::any &val) {
-  return val.type() == typeid(T);
 }

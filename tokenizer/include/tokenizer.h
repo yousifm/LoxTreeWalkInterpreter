@@ -18,7 +18,7 @@ public:
   static const std::unordered_map<std::string, TOKEN_TYPE> _keywords;
 private:
   std::optional<Token> getToken();
-  Token makeToken(TOKEN_TYPE, Token::literal_variant literal_variant = std::monostate());
+  Token makeToken(TOKEN_TYPE, LoxType = std::monostate());
   
   bool isEnd();
   bool advanceIfMatch(char);

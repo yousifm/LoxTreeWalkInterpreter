@@ -7,7 +7,7 @@ class LoxFunction : public LoxCallable {
 public:
   LoxFunction(const Stmt::FunctionStmt); 
 
-  std::any call(Interpreter*, const std::vector<std::any>&) const override;
+  LoxType call(Interpreter*, const std::vector<LoxType>&) const override;
 
   size_t arity() const override; 
 private:

@@ -1,9 +1,10 @@
 #include <ctime>
 #include <lox_callable.h>
+#include <lox_type.h>
 
 class Clock : public LoxCallable {
 public:
-  std::any call(Interpreter* interpreter, const std::vector<std::any>& args) const override {
+  LoxType call(Interpreter* interpreter, const std::vector<LoxType>& args) const override {
     return time(nullptr) / 1000.0;
   }
   size_t arity() const override {return 0;}

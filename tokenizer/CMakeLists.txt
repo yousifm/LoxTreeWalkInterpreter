@@ -1,21 +1,24 @@
 add_library(
   token
   src/token.cpp
-  include/token.h
 )
 
 target_include_directories(token PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
+target_link_libraries(
+  token
+  PUBLIC type
+)
+
 add_library(
   tokenizer
-  include/tokenizer.h
   src/tokenizer.cpp
-  include/token_type.h  
 )
 
 target_include_directories(tokenizer PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 target_link_libraries(tokenizer
+  PUBLIC type
   PUBLIC token
   PUBLIC lox
 )

@@ -1,25 +1,20 @@
+#include <cstdlib>
 #include <sstream>
 
 #include <lox_type.h>
-#include <invalid_type_exception.h>
 
 LoxType::LoxType() : _value(std::monostate()), _type(typeid(std::monostate)) {}
+LoxType::LoxType(const LoxType& other) : _value(other._value), _type(other._type) {}
+LoxType::LoxType(std::monostate val) : LoxType() {}
 
 LoxType::LoxType(bool val) : _value(val), _type(typeid(bool)) {}
 LoxType::LoxType(double val) : _value(val), _type(typeid(double)) {}
 LoxType::LoxType(std::string val) : _value(val), _type(typeid(std::string)) {}
 LoxType::LoxType(callable_ptr val)
-    : _value(std::move(val)), _type(typeid(callable_ptr)) {}
+    : _value(val), _type(typeid(callable_ptr)) {}
 
-template <typename T>
-T LoxType::getValue() {
-  std::type_index template_type = typeid(T);
-
-  if (template_type != _type) {
-    throw InvalidTypeException(_type, template_type);
-  }
-
-  return std::get<T>(_value);
+bool LoxType::empty() const {
+  return isType<std::monostate>();
 }
 
 LoxType &LoxType::operator=(LoxType &other) {
@@ -56,3 +51,28 @@ LoxType &LoxType::operator=(callable_ptr other) {
 
   return *this;
 }
+
+LoxType &LoxType::operator=(const LoxType& other) {
+  _value = other._value;
+  _type = other._type;
+
+  return *this;
+}
+
+bool LoxType::operator==(const LoxType& other) const {
+  return (other._type == _type) && (other._value == _value);
+}
+
+struct Printer {
+  std::string operator()(bool val) {return val ? "true" : "false";}
+  std::string operator()(double val) {return std::to_string(val);}
+  std::string operator()(std::string val) {return val;}
+  std::string operator()(std::monostate val) {return "nil";}
+  std::string operator()(const LoxType::callable_ptr& val) {return "<Lox Function>";}
+};
+
+std::ostream& operator<<(std::ostream& outs, const LoxType& type) {
+  outs << std::visit(Printer(), type._value);
+  return outs;
+}
+

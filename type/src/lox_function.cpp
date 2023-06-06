@@ -5,8 +5,8 @@
 LoxFunction::LoxFunction(const Stmt::FunctionStmt declaration)
     : _declaration(declaration) {}
 
-std::any LoxFunction::call(Interpreter *interpreter,
-                           const std::vector<std::any> &args) const {
+LoxType LoxFunction::call(Interpreter *interpreter,
+                           const std::vector<LoxType> &args) const {
   Environment environment{&interpreter->globals};
 
   for (size_t i = 0; i < _declaration.params().size(); i++) {
@@ -19,7 +19,7 @@ std::any LoxFunction::call(Interpreter *interpreter,
     return r.value();
   }
 
-  return nullptr;
+  return LoxType(std::monostate());
 }
 
 size_t LoxFunction::arity() const {

@@ -39,15 +39,15 @@ private:
 
 class LiteralExpr : public Expr {
 public:
-  explicit LiteralExpr(Token::literal_variant value)
+  explicit LiteralExpr(LoxType value)
       : _value(std::move(value)) {}
 
   void accept(ExprVisitor *) const override;
 
-  Token::literal_variant value() const { return _value; }
+  LoxType value() const { return _value; }
 
 private:
-  const Token::literal_variant _value;
+  const LoxType _value;
 };
 
 class UnaryExpr : public Expr {

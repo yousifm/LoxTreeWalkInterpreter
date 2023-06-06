@@ -5,4 +5,4 @@ add_library(type
 
 target_include_directories(type PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-target_link_libraries(type PRIVATE interpreter statement)
+target_link_libraries(type PRIVATE interpreter PRIVATE statement)

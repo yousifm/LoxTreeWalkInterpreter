@@ -6,12 +6,12 @@
 #include <variant>
 
 Token::Token(TOKEN_TYPE type, std::string  lexeme)
-  : _type(type), _lexeme(std::move(lexeme)), _literal(std::monostate()), _line(0) {}
+  : _type(type), _lexeme(std::move(lexeme)), _literal(), _line(0) {}
 
-Token::Token(TOKEN_TYPE type, std::string  lexeme, literal_variant literal)
+Token::Token(TOKEN_TYPE type, std::string  lexeme, LoxType literal)
 : _type(type), _lexeme(std::move(lexeme)), _literal(std::move(literal)), _line(0) {}
 
-Token::Token(TOKEN_TYPE type, std::string  lexeme, literal_variant literal, size_t line)
+Token::Token(TOKEN_TYPE type, std::string  lexeme, LoxType literal, size_t line)
   : _type(type), _lexeme(std::move(lexeme)), _literal(std::move(literal)), _line(line) {}
 
 bool Token::operator==(const Token& other) const {
@@ -21,7 +21,8 @@ bool Token::operator==(const Token& other) const {
 std::ostream& operator<<(std::ostream& outs, const Token& token)
 {
   outs << token._lexeme << " ";
-  outs << std::visit(Token::variant_print(), token._literal);
+  if (!token._literal.empty())
+    outs << token._literal;
 
   return outs;
 }

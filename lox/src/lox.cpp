@@ -34,7 +34,7 @@ void Lox::run(const std::string &source) {
   Tokenizer tokenizer{source};
   std::vector<Token> tokens = tokenizer.getTokens();
 
-  Parser parser{tokens};
+  Parser parser{std::move(tokens)};
   const std::vector<Stmt::Stmt *> statements = parser.parse();
 
   if (hadError)
@@ -53,17 +53,6 @@ void Lox::report(size_t line, const std::string &location,
 
   std::cerr << "[line " << line << "] Error " << location << ": " << message
             << std::endl;
-}
-
-void Lox::print_any(const std::any &val) {
-  if (val.type() == typeid(std::string)) {
-    std::cout << std::any_cast<std::string>(val) << std::endl;
-  } else if (val.type() == typeid(double)) {
-    std::cout << std::any_cast<double>(val) << std::endl;
-  } else if (val.type() == typeid(bool)) {
-    bool value = std::any_cast<bool>(val);
-    std::cout << (value ? "true" : "false") << std::endl;
-  }
 }
 
 void Lox::runtime_error(RuntimeError err) {

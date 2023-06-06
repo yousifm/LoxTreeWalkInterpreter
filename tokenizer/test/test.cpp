@@ -38,7 +38,7 @@ TEST(TokenizerTest, CanParseAllTokens) {
     Token{TOKEN_TYPE::LESS, "<"},
     Token{TOKEN_TYPE::LESS_EQUAL, "<="},
     Token{TOKEN_TYPE::IDENTIFIER, "identifier"},
-    Token{TOKEN_TYPE::STRING, "\"string\"", "string"},
+    Token{TOKEN_TYPE::STRING, "\"string\"", std::string("string")},
     Token{TOKEN_TYPE::NUMBER, "123", (double) 123},
     Token{TOKEN_TYPE::AND, "and"},
     Token{TOKEN_TYPE::CLASS, "class"},

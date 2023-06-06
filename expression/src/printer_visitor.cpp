@@ -6,7 +6,7 @@ void PrinterVisitor::visitBinary(const Expr::BinaryExpr* expr) {
 
 void PrinterVisitor::visitLiteral(
     const Expr::LiteralExpr* expr) {
-  _builder << std::visit(Token::variant_print(), expr->value());
+  _builder << expr->value(); 
 }
 
 void PrinterVisitor::visitGrouping(

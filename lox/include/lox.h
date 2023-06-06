@@ -14,7 +14,6 @@ public:
   static void run(const std::string &);
   static void error(size_t, const std::string &);
   static void report(size_t, const std::string &, const std::string &);
-  static void print_any(const std::any&);
   static void runtime_error(RuntimeError err);
 private:
   static Interpreter interpreter;

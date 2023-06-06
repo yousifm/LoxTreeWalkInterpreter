@@ -24,7 +24,7 @@ std::vector<Token> Tokenizer::getTokens() {
     std::optional<Token> token = getToken();
 
     if (token.has_value())
-      tokens.emplace_back(token.value());
+      tokens.emplace_back(std::move(token.value()));
   }
 
   tokens.emplace_back(Token{END_OF_FILE, "", std::monostate(), _line});
@@ -39,53 +39,52 @@ std::optional<Token> Tokenizer::getToken() {
 
   switch (c) {
   case '(':
-    tokenopt = makeToken(LEFT_PAREN);
+    tokenopt.emplace(makeToken(LEFT_PAREN));
     break;
   case ')':
-    tokenopt = makeToken(RIGHT_PAREN);
+    tokenopt.emplace(makeToken(RIGHT_PAREN));
     break;
   case '{':
-    tokenopt = makeToken(LEFT_BRACE);
+    tokenopt.emplace(makeToken(LEFT_BRACE));
     break;
   case '}':
-    tokenopt = makeToken(RIGHT_BRACE);
+    tokenopt.emplace(makeToken(RIGHT_BRACE));
     break;
   case ',':
-    tokenopt = makeToken(COMMA);
+    tokenopt.emplace(makeToken(COMMA));
     break;
   case '.':
-    tokenopt = makeToken(DOT);
+    tokenopt.emplace(makeToken(DOT));
     break;
   case '-':
-    tokenopt = makeToken(MINUS);
+    tokenopt.emplace(makeToken(MINUS));
     break;
   case '+':
-    tokenopt = makeToken(PLUS);
+    tokenopt.emplace(makeToken(PLUS));
     break;
   case ';':
-    tokenopt = makeToken(SEMICOLON);
+    tokenopt.emplace(makeToken(SEMICOLON));
     break;
   case '*':
-    tokenopt = makeToken(STAR);
+    tokenopt.emplace(makeToken(STAR));
     break;
   case '?':
-    tokenopt = makeToken(QUESTION_MARK);
+    tokenopt.emplace(makeToken(QUESTION_MARK));
     break;
   case ':':
-    tokenopt = makeToken(SEMICOLON);
+    tokenopt.emplace(makeToken(SEMICOLON));
     break;
   case '!':
-    tokenopt = advanceIfMatch('=') ? makeToken(BANG_EQUAL) : makeToken(BANG);
+    tokenopt.emplace(advanceIfMatch('=') ? makeToken(BANG_EQUAL) : makeToken(BANG));
     break;
   case '=':
-    tokenopt = advanceIfMatch('=') ? makeToken(EQUAL_EQUAL) : makeToken(EQUAL);
+    tokenopt.emplace(advanceIfMatch('=') ? makeToken(EQUAL_EQUAL) : makeToken(EQUAL));
     break;
   case '<':
-    tokenopt = advanceIfMatch('=') ? makeToken(LESS_EQUAL) : makeToken(LESS);
+    tokenopt.emplace(advanceIfMatch('=') ? makeToken(LESS_EQUAL) : makeToken(LESS));
     break;
   case '>':
-    tokenopt =
-        advanceIfMatch('=') ? makeToken(GREATER_EQUAL) : makeToken(GREATER);
+    tokenopt.emplace(advanceIfMatch('=') ? makeToken(GREATER_EQUAL) : makeToken(GREATER));
     break;
   case '/':
     if (advanceIfMatch('/')) {
@@ -94,7 +93,7 @@ std::optional<Token> Tokenizer::getToken() {
     } else if (advanceIfMatch('*')) {
       handleMultilineComment();
     } else {
-      tokenopt = makeToken(SLASH);
+      tokenopt.emplace(makeToken(SLASH));
     }
     break;
   case '"':
@@ -124,9 +123,9 @@ std::optional<Token> Tokenizer::getToken() {
   return tokenopt;
 }
 
-Token Tokenizer::makeToken(TOKEN_TYPE type, Token::literal_variant literal) {
+Token Tokenizer::makeToken(TOKEN_TYPE type, LoxType literal) {
   std::string text = _source.substr(_start, _current - _start);
-  return Token{type, text, literal, _line};
+  return Token{type, text, std::move(literal), _line};
 }
 
 bool Tokenizer::isEnd() { return _current >= _source.size(); }
@@ -207,14 +206,14 @@ std::optional<Token> Tokenizer::handleIdentifier() {
     type = _keywords.at(substring);
   }
 
-  Token::literal_variant literal = std::monostate();
+  LoxType literal = std::monostate();
 
   if (type == FALSE)
     literal = false;
   else if (type == TRUE)
     literal = true;
 
-  return makeToken(type, literal);
+  return makeToken(type, std::move(literal));
 }
 
 void Tokenizer::handleMultilineComment() {

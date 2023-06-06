@@ -7,13 +7,13 @@
 class Environment {
 public:
   explicit Environment() : _enclosing(nullptr) {}
-  explicit Environment(std::unordered_map<std::string, std::any> vals) : _values(vals) {}
+  explicit Environment(std::unordered_map<std::string, LoxType> vals) : _values(vals) {}
   Environment(const Environment& other) : _values(other._values), _enclosing(other._enclosing) {}
   explicit Environment(Environment *enclosing) : _enclosing(enclosing) {}
 
-  void define(std::string name, std::any value) { _values[name] = value; }
+  void define(std::string name, LoxType value) { _values[name] = value; }
 
-  void assign(const Token name, std::any value) {
+  void assign(const Token name, LoxType value) {
     if (_values.contains(name.lexeme())) {
       _values[name.lexeme()] = value;
     } else if (_enclosing != nullptr) {
@@ -23,10 +23,10 @@ public:
     }
   }
 
-  std::any get(Token name) const {
+  LoxType get(Token name) const {
     if (_values.contains(name.lexeme())) {
-      std::any val = _values.at(name.lexeme());
-      if (val.type() == typeid(std::monostate()) || val.type() == typeid(nullptr)) {
+      LoxType val = _values.at(name.lexeme());
+      if (val.isType<std::monostate>()) {
         throw RuntimeError(name, "Undefined variable '" + name.lexeme() + "'.");
       }
       return _values.at(name.lexeme());
@@ -43,6 +43,6 @@ public:
     return *this;
   }
 private:
-  std::unordered_map<std::string, std::any> _values;
+  std::unordered_map<std::string, LoxType> _values;
   Environment *_enclosing;
 };

@@ -1,11 +1,12 @@
 #include <any>
 #include <exception>
+#include <lox_type.h>
 
 class Return : std::exception {
 public:
-  Return(std::any val) : _value(val) {}
-  std::any value() { return _value; }
+  Return(LoxType val) : _value(val) {}
+  LoxType value() { return _value; }
 
 private:
-  std::any _value;
+  LoxType _value;
 };

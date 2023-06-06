@@ -12,7 +12,7 @@ class Interpreter : public Expr::ExprVisitor, public Stmt::StmtVisitor {
 public:
   Interpreter();
 
-  std::any eval(const Expr::Expr *);
+  LoxType eval(const Expr::Expr *);
   void interpret(const std::vector<Stmt::Stmt *>);
 
   void visitExprStmt(const Stmt::ExprStmt *) override;
@@ -41,14 +41,12 @@ private:
   void evalutate(const Expr::Expr *);
   void execute(const Stmt::Stmt *);
   void executeBlock(Environment, const std::vector<const Stmt::Stmt *> &);
-  void enforceDouble(Token, const std::any &);
+  void enforceDouble(Token, const LoxType &);
   bool isTruthyExpr(const Expr::Expr *);
-  bool isTruthyVal(const std::any &);
-  bool isEqual(const std::any &, const std::any &);
+  bool isTruthyVal(const LoxType &);
+  bool isEqual(const LoxType &, const LoxType &);
 
-  template <typename T> bool isOfType(const std::any &);
-
-  std::any _value;
+  LoxType _value;
   Environment _environment;
   Environment globals;
 };
