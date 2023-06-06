@@ -18,6 +18,7 @@ enable_testing()
 
 add_subdirectory(config)
 
+add_subdirectory(type)
 add_subdirectory(lox)
 add_subdirectory(tokenizer)
 add_subdirectory(expression)
