@@ -76,7 +76,7 @@ void Interpreter::visitForStmt(const Stmt::ForStmt *stmt) {
 }
 
 void Interpreter::visitFunctionStmt(const Stmt::FunctionStmt *stmt) {
-  LoxType function = std::shared_ptr<LoxCallable>(new LoxFunction(*stmt));
+  LoxType function = std::shared_ptr<LoxCallable>(new LoxFunction(*stmt, _environment));
   _environment.define(stmt->name().lexeme(), function);
 }
 
