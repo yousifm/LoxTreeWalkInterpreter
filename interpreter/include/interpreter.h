@@ -34,19 +34,22 @@ public:
   void visitAssign(const Expr::AssignExpr *) override;
   void visitLogic(const Expr::LogicExpr *) override;
   void visitCall(const Expr::CallExpr *) override;
+  
+  void resolve(const Expr::Expr*, int);
 
   friend class LoxFunction;
 
 private:
   void evalutate(const Expr::Expr *);
   void execute(const Stmt::Stmt *);
-  void executeBlock(Environment, const std::vector<const Stmt::Stmt *> &);
+  void executeBlock(std::shared_ptr<Environment>, const std::vector<const Stmt::Stmt *> &);
   void enforceDouble(Token, const LoxType &);
   bool isTruthyExpr(const Expr::Expr *);
   bool isTruthyVal(const LoxType &);
-  bool isEqual(const LoxType &, const LoxType &);
+  LoxType lookupVariable(const Token&, const Expr::Expr*);
 
   LoxType _value;
-  Environment _environment;
-  Environment globals;
+  Environment _globals;
+  std::shared_ptr<Environment> _environment;
+  std::unordered_map<const Expr::Expr*, int> _locals;
 };

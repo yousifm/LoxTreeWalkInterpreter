@@ -9,8 +9,8 @@
 #include <sstream>
 
 Interpreter::Interpreter() {
-  globals.define("clock", LoxType(std::shared_ptr<LoxCallable>(new Clock())));
-  _environment = globals;
+  _globals.define("clock", LoxType(std::shared_ptr<LoxCallable>(new Clock())));
+  _environment = std::shared_ptr<Environment>(&_globals);
 }
 
 void Interpreter::interpret(const std::vector<Stmt::Stmt *> statements) {
@@ -44,11 +44,14 @@ void Interpreter::visitVarStmt(const Stmt::VarStmt *stmt) {
     val = eval(stmt->init());
   }
 
-  _environment.define(stmt->name().lexeme(), val);
+  _environment->define(stmt->name().lexeme(), val);
 }
 
 void Interpreter::visitBlock(const Stmt::Block *block) {
-  executeBlock(_environment, block->statements());
+  std::shared_ptr<Environment> env =
+      std::make_shared<Environment>(_environment);
+
+  executeBlock(env, block->statements());
 }
 
 void Interpreter::visitIfStmt(const Stmt::IfStmt *stmt) {
@@ -76,8 +79,9 @@ void Interpreter::visitForStmt(const Stmt::ForStmt *stmt) {
 }
 
 void Interpreter::visitFunctionStmt(const Stmt::FunctionStmt *stmt) {
-  LoxType function = std::shared_ptr<LoxCallable>(new LoxFunction(*stmt, _environment));
-  _environment.define(stmt->name().lexeme(), function);
+  LoxType function = std::shared_ptr<LoxCallable>(
+      new LoxFunction(*stmt, std::shared_ptr<Environment>(_environment)));
+  _environment->define(stmt->name().lexeme(), function);
 }
 
 void Interpreter::visitReturnStmt(const Stmt::ReturnStmt *stmt) {
@@ -178,12 +182,18 @@ void Interpreter::visitTernary(const Expr::TernaryExpr *expr) {
 }
 
 void Interpreter::visitVariable(const Expr::VariableExpr *expr) {
-  _value = _environment.get(expr->name());
+  _value = lookupVariable(expr->name(), expr);
 }
 
 void Interpreter::visitAssign(const Expr::AssignExpr *expr) {
   evalutate(expr->value());
-  _environment.assign(expr->name(), _value);
+
+  if (_locals.contains(expr)) {
+    int distance = _locals[expr];
+    _environment->assignAt(distance, expr->name(), _value);
+  } else {
+    _globals.assign(expr->name(), _value);
+  }
 }
 
 void Interpreter::visitLogic(const Expr::LogicExpr *expr) {
@@ -227,6 +237,10 @@ void Interpreter::visitCall(const Expr::CallExpr *expr) {
   _value = function->call(this, args);
 }
 
+void Interpreter::resolve(const Expr::Expr *expr, int depth) {
+  _locals[expr] = depth;
+}
+
 void Interpreter::evalutate(const Expr::Expr *expr) { expr->accept(this); }
 
 void Interpreter::execute(const Stmt::Stmt *statement) {
@@ -234,8 +248,10 @@ void Interpreter::execute(const Stmt::Stmt *statement) {
 }
 
 void Interpreter::executeBlock(
-    Environment env, const std::vector<const Stmt::Stmt *> &statements) {
-  Environment prev = _environment;
+    std::shared_ptr<Environment> env,
+    const std::vector<const Stmt::Stmt *> &statements) {
+  std::shared_ptr<Environment> prev = _environment;
+
   try {
     _environment = env;
 
@@ -273,4 +289,13 @@ bool Interpreter::isTruthyVal(const LoxType &val) {
 
   throw RuntimeError(Token{END_OF_FILE, ""},
                      "Cannot determine if value is truthy");
+}
+
+LoxType Interpreter::lookupVariable(const Token &name, const Expr::Expr *expr) {
+  if (_locals.contains(expr)) {
+    int distance = _locals[expr];
+
+    return _environment->getAt(distance, name);
+  }
+  return _globals.get(name);
 }

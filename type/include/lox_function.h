@@ -6,9 +6,9 @@
 
 class LoxFunction : public LoxCallable {
 public:
-  LoxFunction(const Stmt::FunctionStmt, Environment closure); 
+  LoxFunction(const Stmt::FunctionStmt, std::shared_ptr<Environment>); 
 
-  LoxType call(Interpreter*, const std::vector<LoxType>&) const override;
+  LoxType call(Interpreter*, const std::vector<LoxType>&) override;
 
   size_t arity() const override; 
 private:

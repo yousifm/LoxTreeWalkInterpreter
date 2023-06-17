@@ -1,6 +1,6 @@
 add_library(
   parser
-  include/parser.h
+  src/resolver.cpp
   src/parser.cpp
 )
 

@@ -2,19 +2,17 @@
 #include <interpreter.h>
 #include <return.h>
 
-LoxFunction::LoxFunction(const Stmt::FunctionStmt declaration, Environment closure)
-    : _declaration(declaration), _closure(closure) {}
+LoxFunction::LoxFunction(const Stmt::FunctionStmt declaration, std::shared_ptr<Environment> enclosing)
+    : _declaration(declaration), _closure(enclosing) {}
 
 LoxType LoxFunction::call(Interpreter *interpreter,
-                           const std::vector<LoxType> &args) const {
-  Environment environment{_closure};
-
+                           const std::vector<LoxType> &args) {
   for (size_t i = 0; i < _declaration.params().size(); i++) {
-    environment.define(_declaration.params().at(i).lexeme(), args.at(i));
+    _closure.define(_declaration.params().at(i).lexeme(), args.at(i));
   }
   
   try {
-    interpreter->executeBlock(environment, _declaration.body());
+    interpreter->executeBlock(std::make_shared<Environment>(_closure), _declaration.body());
   } catch (Return r) {
     return r.value();
   }

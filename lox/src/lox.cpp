@@ -6,6 +6,7 @@
 #include <printer_visitor.h>
 #include <runtime_error.h>
 #include <tokenizer.h>
+#include <resolver.h>
 
 #include <iostream>
 #include <vector>
@@ -36,6 +37,12 @@ void Lox::run(const std::string &source) {
 
   Parser parser{std::move(tokens)};
   const std::vector<Stmt::Stmt *> statements = parser.parse();
+  
+  if (hadError)
+    return;
+
+  Resolver resolver(interpreter);
+  resolver.resolve(statements);
 
   if (hadError)
     return;
