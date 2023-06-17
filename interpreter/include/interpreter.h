@@ -49,7 +49,7 @@ private:
   LoxType lookupVariable(const Token&, const Expr::Expr*);
 
   LoxType _value;
-  Environment _globals;
+  std::shared_ptr<Environment> _globals;
   std::shared_ptr<Environment> _environment;
   std::unordered_map<const Expr::Expr*, int> _locals;
 };

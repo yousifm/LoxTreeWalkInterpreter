@@ -9,8 +9,10 @@
 #include <sstream>
 
 Interpreter::Interpreter() {
-  _globals.define("clock", LoxType(std::shared_ptr<LoxCallable>(new Clock())));
-  _environment = std::shared_ptr<Environment>(&_globals);
+  _globals = std::make_shared<Environment>();
+   
+  _globals->define("clock", LoxType(std::shared_ptr<LoxCallable>(new Clock())));
+  _environment = _globals;
 }
 
 void Interpreter::interpret(const std::vector<Stmt::Stmt *> statements) {
@@ -80,7 +82,7 @@ void Interpreter::visitForStmt(const Stmt::ForStmt *stmt) {
 
 void Interpreter::visitFunctionStmt(const Stmt::FunctionStmt *stmt) {
   LoxType function = std::shared_ptr<LoxCallable>(
-      new LoxFunction(*stmt, std::shared_ptr<Environment>(_environment)));
+      new LoxFunction(*stmt, _environment));
   _environment->define(stmt->name().lexeme(), function);
 }
 
@@ -192,7 +194,7 @@ void Interpreter::visitAssign(const Expr::AssignExpr *expr) {
     int distance = _locals[expr];
     _environment->assignAt(distance, expr->name(), _value);
   } else {
-    _globals.assign(expr->name(), _value);
+    _globals->assign(expr->name(), _value);
   }
 }
 
@@ -297,5 +299,5 @@ LoxType Interpreter::lookupVariable(const Token &name, const Expr::Expr *expr) {
 
     return _environment->getAt(distance, name);
   }
-  return _globals.get(name);
+  return _globals->get(name);
 }
