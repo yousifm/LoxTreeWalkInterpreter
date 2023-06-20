@@ -21,6 +21,7 @@ public:
   void visitForStmt(const Stmt::ForStmt *) override;
   void visitFunctionStmt(const Stmt::FunctionStmt *) override;
   void visitReturnStmt(const Stmt::ReturnStmt *) override;
+  void visitClassStmt(const Stmt::ClassStmt *) override;
 
   void visitBinary(const Expr::BinaryExpr*) override;
   void visitLiteral(const Expr::LiteralExpr*) override;

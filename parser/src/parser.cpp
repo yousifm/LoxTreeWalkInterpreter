@@ -20,7 +20,9 @@ std::vector<Stmt::Stmt *> Parser::parse() {
 
 Stmt::Stmt *Parser::declaration() {
   try {
-    if (advanceIfMatch({VAR}))
+    if (advanceIfMatch({CLASS}))
+      return classDeclaration();
+    else if (advanceIfMatch({VAR}))
       return varDeclaration();
     else if (advanceIfMatch({FUN}))
       return funDeclaration();
@@ -62,6 +64,20 @@ Stmt::Stmt *Parser::funDeclaration() {
   consume(LEFT_BRACE, "Expect '{' before function body.");
   std::vector<const Stmt::Stmt *> body = block();
   return new Stmt::FunctionStmt(name, params, body);
+}
+
+Stmt::Stmt *Parser::classDeclaration() {
+  Token name = consume(IDENTIFIER, "Expected name after class keyword.");
+  consume (LEFT_BRACE, "Expect '{' before class body.");
+
+  std::vector<Stmt::FunctionStmt*> methods;
+  while (!check(RIGHT_BRACE) && !isEnd()) {
+    methods.push_back(dynamic_cast<Stmt::FunctionStmt*>(funDeclaration()));
+  }
+
+  consume(RIGHT_BRACE, "Expect '}' after class body.");
+
+  return new Stmt::ClassStmt(name, methods);
 }
 
 Stmt::Stmt *Parser::statement() {

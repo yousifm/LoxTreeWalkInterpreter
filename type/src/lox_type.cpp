@@ -12,6 +12,8 @@ LoxType::LoxType(double val) : _value(val), _type(typeid(double)) {}
 LoxType::LoxType(std::string val) : _value(val), _type(typeid(std::string)) {}
 LoxType::LoxType(callable_ptr val)
     : _value(val), _type(typeid(callable_ptr)) {}
+LoxType::LoxType(LoxInstance val)
+    : _value(val), _type(typeid(LoxInstance)) {}
 
 bool LoxType::empty() const {
   return isType<std::monostate>();
@@ -69,6 +71,7 @@ struct Printer {
   std::string operator()(std::string val) {return val;}
   std::string operator()(std::monostate val) {return "nil";}
   std::string operator()(const LoxType::callable_ptr& val) {return "<Lox Function>";}
+  std::string operator()(const LoxInstance& val) {return "<Lox Instance>";}
 };
 
 std::ostream& operator<<(std::ostream& outs, const LoxType& type) {

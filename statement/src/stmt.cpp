@@ -60,4 +60,8 @@ void ReturnStmt::accept(StmtVisitor *visitor) const {
   visitor->visitReturnStmt(this);
 }
 
+void ClassStmt::accept(StmtVisitor* visitor) const {
+  visitor->visitClassStmt(this);
+}
+
 } // namespace Stmt

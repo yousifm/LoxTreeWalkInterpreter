@@ -24,6 +24,7 @@ public:
   void visitForStmt(const Stmt::ForStmt *) override;
   void visitFunctionStmt(const Stmt::FunctionStmt *) override;
   void visitReturnStmt(const Stmt::ReturnStmt *) override;
+  void visitClassStmt(const Stmt::ClassStmt *) override;
 
   void visitGrouping(const Expr::GroupingExpr *) override;
   void visitUnary(const Expr::UnaryExpr *) override;

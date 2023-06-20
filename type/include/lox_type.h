@@ -8,6 +8,7 @@
 
 #include <lox_callable.h>
 #include <invalid_type_exception.h>
+#include <lox_instance.h>
 
 class LoxType {
 public:
@@ -20,6 +21,7 @@ public:
   LoxType(double);
   LoxType(std::string);
   LoxType(callable_ptr); 
+  LoxType(LoxInstance);
   
   template <typename T>
   const T& getValue() const;
@@ -39,7 +41,7 @@ public:
 
   bool operator==(const LoxType&) const;
 private:
-  std::variant<bool, double, std::string, callable_ptr, std::monostate> _value;
+  std::variant<bool, double, std::string, callable_ptr, LoxInstance, std::monostate> _value;
   std::type_index _type;
 
   friend std::ostream& operator<<(std::ostream&, const LoxType&);

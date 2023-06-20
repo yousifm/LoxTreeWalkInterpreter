@@ -139,4 +139,17 @@ private:
   Expr::Expr *_expr;
 };
 
+class ClassStmt : public Stmt {
+public:
+  ClassStmt(Token name, std::vector<FunctionStmt*> methods) : _name(name), _methods(std::move(methods)) {}
+
+  void accept(StmtVisitor*) const;
+
+  const Token name() const { return _name; }
+  const std::vector<FunctionStmt*> methods() const { return _methods; }
+private:
+  Token _name;
+  std::vector<FunctionStmt *> _methods;
+};
+
 } // namespace Stmt

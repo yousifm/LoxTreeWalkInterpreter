@@ -56,6 +56,11 @@ void Resolver::visitReturnStmt(const Stmt::ReturnStmt *stmt) {
     resolve(stmt->expr());
 }
 
+void Resolver::visitClassStmt(const Stmt::ClassStmt *stmt) {
+  declare(stmt->name());
+  define(stmt->name());
+}
+
 void Resolver::visitBinary(const Expr::BinaryExpr *expr) {
   resolve(expr->left());
   resolve(expr->right());
