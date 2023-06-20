@@ -303,6 +303,9 @@ Expr::Expr *Parser::call() {
 
       Token paren = consume(RIGHT_PAREN, "Expect ')' after arguments.");
       expr = new Expr::CallExpr(expr, paren, arguments);
+    } else if (advanceIfMatch({DOT})) {
+      Token name = consume(IDENTIFIER, "Expect property name after '.'.");
+      expr = new Expr::GetExpr(expr, name);
     } else {
       break;
     }

@@ -10,7 +10,7 @@
 
 class Resolver : public Expr::ExprVisitor, public Stmt::StmtVisitor {
 public:
-  Resolver(Interpreter&);
+  Resolver(Interpreter &);
 
   void visitExprStmt(const Stmt::ExprStmt *) override;
   void visitPrintStmt(const Stmt::PrintStmt *) override;
@@ -23,30 +23,32 @@ public:
   void visitReturnStmt(const Stmt::ReturnStmt *) override;
   void visitClassStmt(const Stmt::ClassStmt *) override;
 
-  void visitBinary(const Expr::BinaryExpr*) override;
-  void visitLiteral(const Expr::LiteralExpr*) override;
-  void visitUnary(const Expr::UnaryExpr*) override;
-  void visitGrouping(const Expr::GroupingExpr*) override;
-  void visitTernary(const Expr::TernaryExpr*) override;
-  void visitVariable(const Expr::VariableExpr*) override;
-  void visitAssign(const Expr::AssignExpr*) override;
-  void visitLogic(const Expr::LogicExpr*) override;
-  void visitCall(const Expr::CallExpr*) override;
+  void visitBinary(const Expr::BinaryExpr *) override;
+  void visitLiteral(const Expr::LiteralExpr *) override;
+  void visitUnary(const Expr::UnaryExpr *) override;
+  void visitGrouping(const Expr::GroupingExpr *) override;
+  void visitTernary(const Expr::TernaryExpr *) override;
+  void visitVariable(const Expr::VariableExpr *) override;
+  void visitAssign(const Expr::AssignExpr *) override;
+  void visitLogic(const Expr::LogicExpr *) override;
+  void visitCall(const Expr::CallExpr *) override;
+  void visitGet(const Expr::GetExpr *) override;
 
-  void resolve(const std::vector<Stmt::Stmt*>&);
+  void resolve(const std::vector<Stmt::Stmt *> &);
+
 private:
-  void resolve(const std::vector<const Stmt::Stmt*>&);
-  void resolve(const Stmt::Stmt*);
-  void resolve(const Expr::Expr*);
-  void resolveLocal(const Expr::Expr*, const Token&);
-  void resolveFunction(const Stmt::FunctionStmt*);
+  void resolve(const std::vector<const Stmt::Stmt *> &);
+  void resolve(const Stmt::Stmt *);
+  void resolve(const Expr::Expr *);
+  void resolveLocal(const Expr::Expr *, const Token &);
+  void resolveFunction(const Stmt::FunctionStmt *);
 
   void beginScope();
   void endScope();
 
-  void declare(const Token&);
-  void define(const Token&);
+  void declare(const Token &);
+  void define(const Token &);
 
-  Interpreter& _interpreter;
+  Interpreter &_interpreter;
   std::deque<std::unordered_map<std::string, bool>> _scopes;
 };

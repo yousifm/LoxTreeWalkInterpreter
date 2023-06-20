@@ -1,11 +1,11 @@
 #include "interpreter.h"
 #include "lox.h"
 #include "lox_callable.h"
+#include "lox_class.h"
 #include "native_func.h"
 #include "return.h"
 #include "runtime_error.h"
 #include "token_type.h"
-#include "lox_class.h"
 
 #include <sstream>
 
@@ -99,7 +99,8 @@ void Interpreter::visitReturnStmt(const Stmt::ReturnStmt *stmt) {
 void Interpreter::visitClassStmt(const Stmt::ClassStmt *stmt) {
   _environment->define(stmt->name().lexeme(), 0.0);
 
-  LoxType loxClass = std::shared_ptr<LoxCallable>(new LoxClass(stmt->name().lexeme()));
+  LoxType loxClass =
+      std::shared_ptr<LoxCallable>(new LoxClass(stmt->name().lexeme()));
 
   _environment->assign(stmt->name(), loxClass);
 }
@@ -246,6 +247,16 @@ void Interpreter::visitCall(const Expr::CallExpr *expr) {
     throw RuntimeError(expr->paren(), error.str());
   }
   _value = function->call(this, args);
+}
+
+void Interpreter::visitGet(const Expr::GetExpr *expr) {
+  LoxType object = eval(expr->object());
+  if (object.isType<LoxInstance>()) {
+    _value = object.getValue<LoxInstance>().get(expr->name());
+    return;
+  }
+
+  throw RuntimeError(expr->name(), "Cannot get property of non-instance.");
 }
 
 void Interpreter::resolve(const Expr::Expr *expr, int depth) {

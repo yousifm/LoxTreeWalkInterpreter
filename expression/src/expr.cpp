@@ -43,4 +43,8 @@ void CallExpr::accept(ExprVisitor* visitor) const {
   visitor->visitCall(this);
 }
 
+void GetExpr::accept(ExprVisitor* visitor) const {
+  visitor->visitGet(this);
+}
+
 } // namespace Expr

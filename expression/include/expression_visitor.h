@@ -15,6 +15,7 @@ public:
   virtual void visitAssign(const AssignExpr *) = 0;
   virtual void visitLogic(const LogicExpr *) = 0;
   virtual void visitCall(const CallExpr *) = 0;
+  virtual void visitGet(const GetExpr *) = 0;
 };
 
 } // namespace Expr

@@ -2,8 +2,11 @@
 #include <lox_instance.h>
 #include <lox_type.h>
 
-LoxType LoxClass::call(Interpreter* interpreter, const std::vector<LoxType>& args) {
+LoxType LoxClass::call(Interpreter *interpreter,
+                       const std::vector<LoxType> &args) {
   LoxInstance instance(this);
 
   return instance;
 }
+
+const std::string &LoxClass::name() { return _name; }

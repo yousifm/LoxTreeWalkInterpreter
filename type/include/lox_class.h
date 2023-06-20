@@ -10,6 +10,8 @@ public:
 
   LoxType call(Interpreter *, const std::vector<LoxType> &) override;
   size_t arity() const override { return 0; }
+
+  const std::string& name();
 private:
   std::string _name;
 };

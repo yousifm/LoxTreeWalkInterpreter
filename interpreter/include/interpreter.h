@@ -35,6 +35,7 @@ public:
   void visitAssign(const Expr::AssignExpr *) override;
   void visitLogic(const Expr::LogicExpr *) override;
   void visitCall(const Expr::CallExpr *) override;
+  void visitGet(const Expr::GetExpr *) override;
   
   void resolve(const Expr::Expr*, int);
 

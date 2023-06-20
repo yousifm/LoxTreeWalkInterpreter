@@ -39,8 +39,7 @@ private:
 
 class LiteralExpr : public Expr {
 public:
-  explicit LiteralExpr(LoxType value)
-      : _value(std::move(value)) {}
+  explicit LiteralExpr(LoxType value) : _value(std::move(value)) {}
 
   void accept(ExprVisitor *) const override;
 
@@ -151,6 +150,19 @@ private:
   Expr *_callee;
   Token _paren;
   const std::vector<Expr *> _arguments;
+};
+
+class GetExpr : public Expr {
+public:
+  explicit GetExpr(Expr *object, Token name) : _object(object), _name(name) {}
+  void accept(ExprVisitor *) const override;
+
+  const Expr *object() const { return _object; }
+  const Token name() const { return _name; }
+
+private:
+  Expr *_object;
+  Token _name;
 };
 
 } // namespace Expr
