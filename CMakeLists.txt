@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.14...3.26)
 
 project(LoxTreeWalk)
 
-set(CMAKE_CXX_COMPILER /usr/bin/c++)
+set(CMAKE_CXX_COMPILER_ID "GNU")
+set(CMAKE_CXX_COMPILER_VERSION "13.1.1")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS True)
 
