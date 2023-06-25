@@ -195,7 +195,7 @@ std::optional<Token> Tokenizer::handleNumber() {
 }
 
 std::optional<Token> Tokenizer::handleIdentifier() {
-  while (isalpha(peek()))
+  while (isalpha(peek()) || peek() == '_')
     advance();
 
   std::string substring = _source.substr(_start, _current - _start);
