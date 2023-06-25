@@ -6,22 +6,26 @@
 #include <typeindex>
 #include <memory>
 
-#include <lox_callable.h>
 #include <invalid_type_exception.h>
-#include <lox_instance.h>
+
+class LoxFunction;
+class LoxInstance;
+class LoxClass;
+class LoxCallable;
+
 
 class LoxType {
 public:
-  typedef std::shared_ptr<LoxCallable> callable_ptr ;
-
   LoxType();
   LoxType(const LoxType&);
   LoxType(std::monostate);
   LoxType(bool);
   LoxType(double);
   LoxType(std::string);
-  LoxType(callable_ptr); 
-  LoxType(LoxInstance);
+  LoxType(LoxCallable*); 
+  LoxType(LoxFunction*);
+  LoxType(LoxClass*);
+  LoxType(LoxInstance*);
   
   template <typename T>
   const T& getValue() const;
@@ -35,13 +39,16 @@ public:
   LoxType& operator=(bool);
   LoxType& operator=(double);
   LoxType& operator=(std::string);
-  LoxType& operator=(callable_ptr);
-
+  LoxType& operator=(LoxCallable*);
+  LoxType& operator=(LoxFunction*);
+  LoxType& operator=(LoxClass*);
+  LoxType& operator=(LoxInstance*);
+  
   LoxType& operator=(const LoxType&);
 
   bool operator==(const LoxType&) const;
 private:
-  std::variant<bool, double, std::string, callable_ptr, LoxInstance, std::monostate> _value;
+  std::variant<bool, double, std::string, LoxInstance*, LoxCallable*, LoxClass*, LoxFunction* , std::monostate> _value;
   std::type_index _type;
 
   friend std::ostream& operator<<(std::ostream&, const LoxType&);

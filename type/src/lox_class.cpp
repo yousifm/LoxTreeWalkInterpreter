@@ -4,9 +4,7 @@
 
 LoxType LoxClass::call(Interpreter *interpreter,
                        const std::vector<LoxType> &args) {
-  LoxInstance instance(this);
-
-  return instance;
+  return LoxType(new LoxInstance{this});
 }
 
 const std::string &LoxClass::name() { return _name; }

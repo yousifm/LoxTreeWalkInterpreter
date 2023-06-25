@@ -1,6 +1,7 @@
 #pragma once
 
 #include <runtime_error.h>
+#include <lox_type.h>
 #include <token.h>
 #include <unordered_map>
 

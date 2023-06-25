@@ -6,13 +6,14 @@
 #include "return.h"
 #include "runtime_error.h"
 #include "token_type.h"
+#include <lox_instance.h>
 
 #include <sstream>
 
 Interpreter::Interpreter() {
   _globals = std::make_shared<Environment>();
 
-  _globals->define("clock", LoxType(std::shared_ptr<LoxCallable>(new Clock())));
+  _globals->define("clock", LoxType(new Clock()));
   _environment = _globals;
 }
 
@@ -82,8 +83,7 @@ void Interpreter::visitForStmt(const Stmt::ForStmt *stmt) {
 }
 
 void Interpreter::visitFunctionStmt(const Stmt::FunctionStmt *stmt) {
-  LoxType function =
-      std::shared_ptr<LoxCallable>(new LoxFunction(*stmt, _environment));
+  LoxType function = new LoxFunction(*stmt, _environment);
   _environment->define(stmt->name().lexeme(), function);
 }
 
@@ -99,8 +99,7 @@ void Interpreter::visitReturnStmt(const Stmt::ReturnStmt *stmt) {
 void Interpreter::visitClassStmt(const Stmt::ClassStmt *stmt) {
   _environment->define(stmt->name().lexeme(), 0.0);
 
-  LoxType loxClass =
-      std::shared_ptr<LoxCallable>(new LoxClass(stmt->name().lexeme()));
+  LoxType loxClass = new LoxClass(stmt->name().lexeme());
 
   _environment->assign(stmt->name(), loxClass);
 }
@@ -234,11 +233,15 @@ void Interpreter::visitCall(const Expr::CallExpr *expr) {
   for (const Expr::Expr *arg : expr->arguments()) {
     args.push_back(eval(arg));
   }
+  
+  LoxCallable * function;
 
-  if (!callee.isType<LoxType::callable_ptr>())
+  if (callee.isType<LoxFunction*>())
+    function = callee.getValue<LoxFunction*>();
+  else if (callee.isType<LoxCallable*>())
+    function = callee.getValue<LoxCallable*>();
+  else
     throw RuntimeError(expr->paren(), "Can only call function or classes.");
-
-  LoxCallable *function = callee.getValue<LoxType::callable_ptr>().get();
 
   if (args.size() != function->arity()) {
     std::stringstream error;
@@ -252,7 +255,7 @@ void Interpreter::visitCall(const Expr::CallExpr *expr) {
 void Interpreter::visitGet(const Expr::GetExpr *expr) {
   LoxType object = eval(expr->object());
   if (object.isType<LoxInstance>()) {
-    _value = object.getValue<LoxInstance>().get(expr->name());
+    _value = object.getValue<LoxInstance*>()->get(expr->name());
     return;
   }
 
