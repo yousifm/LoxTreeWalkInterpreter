@@ -2,7 +2,7 @@
 
 #include <lox_class.h>
 
-#include <unordered_map>
+#include <map>
 
 class Token;
 
@@ -15,6 +15,6 @@ public:
   bool operator==(const LoxInstance& other) const;
 private:
   LoxClass* _loxClass;
-  std::unordered_map<std::string, LoxType> _fields;
+  std::map<std::string, LoxType> _fields;
 };
 
