@@ -16,6 +16,10 @@ const LoxType LoxInstance::get(Token name) const {
   throw RuntimeError(name, error_message.str());
 }
 
+void LoxInstance::set(Token name, LoxType value) {
+  _fields.insert({name.lexeme(), value});
+}
+
 bool LoxInstance::operator==(const LoxInstance& other) const {
   return _fields == other._fields;
 }

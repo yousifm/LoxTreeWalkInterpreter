@@ -262,6 +262,20 @@ void Interpreter::visitGet(const Expr::GetExpr *expr) {
   throw RuntimeError(expr->name(), "Cannot get property of non-instance.");
 }
 
+void Interpreter::visitSet(const Expr::SetExpr *expr) {
+  LoxType object = eval(expr->object());
+
+  if (object.isType<LoxInstance*>()) {
+    LoxType val = eval(expr->value());
+
+    object.getValue<LoxInstance*>()->set(expr->name(), val);
+
+    return;
+  }
+
+  throw RuntimeError(expr->name(), "Cannot set property of non-instance.");
+}
+
 void Interpreter::resolve(const Expr::Expr *expr, int depth) {
   _locals[expr] = depth;
 }

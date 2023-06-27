@@ -68,11 +68,11 @@ Stmt::Stmt *Parser::funDeclaration() {
 
 Stmt::Stmt *Parser::classDeclaration() {
   Token name = consume(IDENTIFIER, "Expected name after class keyword.");
-  consume (LEFT_BRACE, "Expect '{' before class body.");
+  consume(LEFT_BRACE, "Expect '{' before class body.");
 
-  std::vector<Stmt::FunctionStmt*> methods;
+  std::vector<Stmt::FunctionStmt *> methods;
   while (!check(RIGHT_BRACE) && !isEnd()) {
-    methods.push_back(dynamic_cast<Stmt::FunctionStmt*>(funDeclaration()));
+    methods.push_back(dynamic_cast<Stmt::FunctionStmt *>(funDeclaration()));
   }
 
   consume(RIGHT_BRACE, "Expect '}' after class body.");
@@ -170,7 +170,7 @@ Stmt::Stmt *Parser::forStatement() {
 
 Stmt::Stmt *Parser::returnStatement() {
   Token ret = previous();
-  Expr::Expr* value = nullptr;
+  Expr::Expr *value = nullptr;
   if (!check(SEMICOLON)) {
     value = expression();
   }
@@ -187,14 +187,22 @@ Expr::Expr *Parser::assignment() {
   if (advanceIfMatch({EQUAL})) {
     Token equals = previous();
     Expr::Expr *value = assignment();
+  
+    Expr::VariableExpr* variable_ptr = dynamic_cast<Expr::VariableExpr*>(expr);
+    Expr::GetExpr* get_ptr = dynamic_cast<Expr::GetExpr*>(expr);
 
-    try {
-      Token name = dynamic_cast<Expr::VariableExpr *>(expr)->name();
+    if (variable_ptr != nullptr) {
+      Token name = variable_ptr->name();
 
       return new Expr::AssignExpr(name, value);
-    } catch (std::exception e) {
-      error(equals, "Invalid assignment target.");
+    } else if (get_ptr != nullptr) {
+      Token name = get_ptr->name();
+      const Expr::Expr* object = get_ptr->object();
+
+      return new Expr::SetExpr(object, name, value);
     }
+
+    error(equals, "Invalid assignment target.");
   }
 
   return expr;

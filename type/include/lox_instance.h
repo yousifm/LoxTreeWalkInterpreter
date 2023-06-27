@@ -10,9 +10,11 @@ class LoxInstance {
 public:
   LoxInstance(LoxClass*);
   
-  const LoxType get(Token name) const;
+  const LoxType get(Token) const;
+  
+  void set(Token, LoxType);
 
-  bool operator==(const LoxInstance& other) const;
+  bool operator==(const LoxInstance&) const;
 private:
   LoxClass* _loxClass;
   std::map<std::string, LoxType> _fields;

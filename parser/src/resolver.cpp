@@ -114,6 +114,11 @@ void Resolver::visitGet(const Expr::GetExpr* expr) {
   resolve(expr->object());
 }
 
+void Resolver::visitSet(const Expr::SetExpr* expr) {
+  resolve(expr->object());
+  resolve(expr->value());
+}
+
 void Resolver::resolve(const std::vector<Stmt::Stmt *> &statements) {
   for (const Stmt::Stmt *stmt : statements) {
     resolve(stmt);

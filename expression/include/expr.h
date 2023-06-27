@@ -165,4 +165,20 @@ private:
   Token _name;
 };
 
+class SetExpr : public Expr {
+public:
+  explicit SetExpr(const Expr *object, Token name, const Expr *value)
+      : _object(object), _name(name), _value(value) {}
+  void accept(ExprVisitor *) const override;
+
+  const Expr *object() const { return _object; }
+  const Token name() const { return _name; }
+  const Expr *value() const { return _value; }
+
+private:
+  const Expr *_object;
+  Token _name;
+  const Expr *_value;
+};
+
 } // namespace Expr

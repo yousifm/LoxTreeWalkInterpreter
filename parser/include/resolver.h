@@ -3,6 +3,7 @@
 #include <expression_visitor.h>
 #include <stmt_visitor.h>
 #include <token.h>
+#include <interpreter.h>
 
 #include <deque>
 #include <string>
@@ -33,6 +34,7 @@ public:
   void visitLogic(const Expr::LogicExpr *) override;
   void visitCall(const Expr::CallExpr *) override;
   void visitGet(const Expr::GetExpr *) override;
+  void visitSet(const Expr::SetExpr *) override;
 
   void resolve(const std::vector<Stmt::Stmt *> &);
 
