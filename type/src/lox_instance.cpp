@@ -10,6 +10,12 @@ const LoxType LoxInstance::get(Token name) const {
   if (_fields.contains(name.lexeme())) {
     return _fields.at(name.lexeme());
   }
+  
+  std::optional<LoxFunction> method = _loxClass->getMethod(name.lexeme());
+  if (method.has_value()) {
+    return LoxType(new LoxFunction(method.value()));
+  }
+
   std::stringstream error_message;
   error_message << _loxClass->name() << " has no field named " << name.lexeme() << ".";
 

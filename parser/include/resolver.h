@@ -4,6 +4,7 @@
 #include <stmt_visitor.h>
 #include <token.h>
 #include <interpreter.h>
+#include <function_type.h>
 
 #include <deque>
 #include <string>
@@ -43,7 +44,7 @@ private:
   void resolve(const Stmt::Stmt *);
   void resolve(const Expr::Expr *);
   void resolveLocal(const Expr::Expr *, const Token &);
-  void resolveFunction(const Stmt::FunctionStmt *);
+  void resolveFunction(const Stmt::FunctionStmt *, FunctionType);
 
   void beginScope();
   void endScope();

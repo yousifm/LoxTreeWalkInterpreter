@@ -19,7 +19,7 @@ LoxType::LoxType(LoxCallable* val)
 LoxType::LoxType(LoxFunction* val)
     : _value(val), _type(typeid(LoxFunction*)) {}
 LoxType::LoxType(LoxClass* val)
-    : _value(val), _type(typeid(LoxType*)) {}
+    : _value(val), _type(typeid(LoxClass*)) {}
 LoxType::LoxType(LoxInstance* val)
     : _value(val), _type(typeid(LoxInstance*)) {}
 

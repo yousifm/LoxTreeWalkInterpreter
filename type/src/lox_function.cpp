@@ -5,6 +5,8 @@
 LoxFunction::LoxFunction(const Stmt::FunctionStmt declaration, std::shared_ptr<Environment> enclosing)
     : _declaration(declaration), _closure(enclosing) {}
 
+LoxFunction::LoxFunction(const LoxFunction& other) : _declaration(other._declaration), _closure(other._closure) {}
+
 LoxType LoxFunction::call(Interpreter *interpreter,
                            const std::vector<LoxType> &args) {
   for (size_t i = 0; i < _declaration.params().size(); i++) {

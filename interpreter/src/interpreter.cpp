@@ -99,7 +99,13 @@ void Interpreter::visitReturnStmt(const Stmt::ReturnStmt *stmt) {
 void Interpreter::visitClassStmt(const Stmt::ClassStmt *stmt) {
   _environment->define(stmt->name().lexeme(), 0.0);
 
-  LoxType loxClass = new LoxClass(stmt->name().lexeme());
+  std::map<std::string, LoxFunction> methods;
+  for (Stmt::FunctionStmt *method : stmt->methods()) {
+    methods.insert(
+        {method->name().lexeme(), LoxFunction(*method, _environment)});
+  }
+
+  LoxType loxClass(new LoxClass(stmt->name().lexeme(), methods));
 
   _environment->assign(stmt->name(), loxClass);
 }
@@ -233,15 +239,17 @@ void Interpreter::visitCall(const Expr::CallExpr *expr) {
   for (const Expr::Expr *arg : expr->arguments()) {
     args.push_back(eval(arg));
   }
-  
-  LoxCallable * function;
 
-  if (callee.isType<LoxFunction*>())
-    function = callee.getValue<LoxFunction*>();
-  else if (callee.isType<LoxCallable*>())
-    function = callee.getValue<LoxCallable*>();
+  LoxCallable *function;
+
+  if (callee.isType<LoxFunction *>())
+    function = callee.getValue<LoxFunction *>();
+  else if (callee.isType<LoxCallable *>())
+    function = callee.getValue<LoxCallable *>();
+  else if (callee.isType<LoxClass *>())
+    function = callee.getValue<LoxClass *>();
   else
-    throw RuntimeError(expr->paren(), "Can only call function or classes.");
+    throw RuntimeError(expr->paren(), "Can only call functions or classes.");
 
   if (args.size() != function->arity()) {
     std::stringstream error;
@@ -254,8 +262,8 @@ void Interpreter::visitCall(const Expr::CallExpr *expr) {
 
 void Interpreter::visitGet(const Expr::GetExpr *expr) {
   LoxType object = eval(expr->object());
-  if (object.isType<LoxInstance>()) {
-    _value = object.getValue<LoxInstance*>()->get(expr->name());
+  if (object.isType<LoxInstance *>()) {
+    _value = object.getValue<LoxInstance *>()->get(expr->name());
     return;
   }
 
@@ -265,10 +273,10 @@ void Interpreter::visitGet(const Expr::GetExpr *expr) {
 void Interpreter::visitSet(const Expr::SetExpr *expr) {
   LoxType object = eval(expr->object());
 
-  if (object.isType<LoxInstance*>()) {
+  if (object.isType<LoxInstance *>()) {
     LoxType val = eval(expr->value());
 
-    object.getValue<LoxInstance*>()->set(expr->name(), val);
+    object.getValue<LoxInstance *>()->set(expr->name(), val);
 
     return;
   }

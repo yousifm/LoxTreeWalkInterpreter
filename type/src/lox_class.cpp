@@ -8,3 +8,10 @@ LoxType LoxClass::call(Interpreter *interpreter,
 }
 
 const std::string &LoxClass::name() { return _name; }
+
+std::optional<LoxFunction> LoxClass::getMethod(const std::string &name) {
+  if (_methods.contains(name)) return std::optional(_methods.at(name));
+
+  return std::nullopt;
+}
+

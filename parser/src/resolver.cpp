@@ -48,7 +48,7 @@ void Resolver::visitFunctionStmt(const Stmt::FunctionStmt *stmt) {
   declare(stmt->name());
   define(stmt->name());
 
-  resolveFunction(stmt);
+  resolveFunction(stmt, FunctionType::FUNCTION);
 }
 
 void Resolver::visitReturnStmt(const Stmt::ReturnStmt *stmt) {
@@ -59,6 +59,10 @@ void Resolver::visitReturnStmt(const Stmt::ReturnStmt *stmt) {
 void Resolver::visitClassStmt(const Stmt::ClassStmt *stmt) {
   declare(stmt->name());
   define(stmt->name());
+
+  for (Stmt::FunctionStmt* method : stmt->methods()) {
+    resolveFunction(method, FunctionType::METHOD);
+  } 
 }
 
 void Resolver::visitBinary(const Expr::BinaryExpr *expr) {
@@ -146,7 +150,7 @@ void Resolver::resolveLocal(const Expr::Expr *expr, const Token &name) {
   }
 }
 
-void Resolver::resolveFunction(const Stmt::FunctionStmt *stmt) {
+void Resolver::resolveFunction(const Stmt::FunctionStmt *stmt, FunctionType type) {
   beginScope();
 
   for (const Token &param : stmt->params()) {
