@@ -284,6 +284,10 @@ void Interpreter::visitSet(const Expr::SetExpr *expr) {
   throw RuntimeError(expr->name(), "Cannot set property of non-instance.");
 }
 
+void Interpreter::visitThis(const Expr::ThisExpr *expr) {
+  _value = lookupVariable(expr->keyword(), expr);
+}
+
 void Interpreter::resolve(const Expr::Expr *expr, int depth) {
   _locals[expr] = depth;
 }

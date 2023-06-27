@@ -51,4 +51,8 @@ void SetExpr::accept(ExprVisitor* visitor) const {
   visitor->visitSet(this);
 }
 
+void ThisExpr::accept(ExprVisitor* visitor) const {
+  visitor->visitThis(this);
+}
+
 } // namespace Expr

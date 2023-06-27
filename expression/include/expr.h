@@ -181,4 +181,16 @@ private:
   const Expr *_value;
 };
 
+class ThisExpr : public Expr {
+public:
+  explicit ThisExpr(Token keyword) : _keyword(keyword) {}
+  
+  void accept(ExprVisitor*) const override;
+
+  const Token keyword() const { return _keyword; }
+
+private:
+  Token _keyword;
+};
+
 } // namespace Expr

@@ -37,7 +37,8 @@ public:
   void visitCall(const Expr::CallExpr *) override;
   void visitGet(const Expr::GetExpr *) override;
   void visitSet(const Expr::SetExpr *) override;
-  
+  void visitThis(const Expr::ThisExpr *) override;
+
   void resolve(const Expr::Expr*, int);
 
   friend class LoxFunction;

@@ -6,14 +6,14 @@
 
 LoxInstance::LoxInstance(LoxClass* loxClass) : _loxClass(loxClass) {}
 
-const LoxType LoxInstance::get(Token name) const {
+const LoxType LoxInstance::get(Token name) {
   if (_fields.contains(name.lexeme())) {
     return _fields.at(name.lexeme());
   }
   
-  std::optional<LoxFunction> method = _loxClass->getMethod(name.lexeme());
-  if (method.has_value()) {
-    return LoxType(new LoxFunction(method.value()));
+  std::optional<LoxFunction> method_opt = _loxClass->getMethod(name.lexeme());
+  if (method_opt.has_value()) {
+    return LoxType(method_opt.value().bind(this));
   }
 
   std::stringstream error_message;

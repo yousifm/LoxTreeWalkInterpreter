@@ -17,6 +17,7 @@ public:
   virtual void visitCall(const CallExpr *) = 0;
   virtual void visitGet(const GetExpr *) = 0;
   virtual void visitSet(const SetExpr *) = 0;
+  virtual void visitThis(const ThisExpr *) = 0;
 };
 
 } // namespace Expr

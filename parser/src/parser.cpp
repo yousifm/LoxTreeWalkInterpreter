@@ -332,6 +332,9 @@ Expr::Expr *Parser::primary() {
   if (advanceIfMatch({NUMBER, STRING})) {
     return new Expr::LiteralExpr(previous().literal());
   }
+  if (advanceIfMatch({THIS})) {
+    return new Expr::ThisExpr(previous());
+  }
   if (advanceIfMatch({IDENTIFIER})) {
     return new Expr::VariableExpr(previous());
   }

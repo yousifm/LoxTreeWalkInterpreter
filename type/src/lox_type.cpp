@@ -100,7 +100,7 @@ struct Printer {
   std::string operator()(std::string val) {return val;}
   std::string operator()(std::monostate val) {return "nil";}
   std::string operator()(const LoxCallable* val) {return "<Lox Function>";}
-  std::string operator()(const LoxInstance& val) {return "<Lox Instance>";}
+  std::string operator()(const LoxInstance* val) {return "<Lox Instance>";}
 };
 
 std::ostream& operator<<(std::ostream& outs, const LoxType& type) {

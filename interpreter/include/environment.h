@@ -42,9 +42,20 @@ public:
   }
 
   LoxType getAt(int distance, Token name) {
-    return ancestor(distance)->_values[name.lexeme()];
+    auto env = ancestor(distance);
+    if (env->_values.contains(name.lexeme()))
+      return env->_values[name.lexeme()];
+    throw RuntimeError(name, "Undefined variable '" + name.lexeme() + "'.");
   }
   
+  void printAll() {
+    for (auto p : _values) {
+      std::cout << p.first << std::endl;
+    }
+    if (_enclosing != nullptr)
+      _enclosing->printAll();
+  } 
+
   Environment* ancestor(int distance) {
     Environment* env = this;
     for (int i = 0; i < distance; i++) {

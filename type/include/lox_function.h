@@ -13,6 +13,7 @@ public:
 
   size_t arity() const override;
 
+  LoxFunction* bind(LoxInstance*);
 private:
   Stmt::FunctionStmt _declaration;
   Environment _closure;

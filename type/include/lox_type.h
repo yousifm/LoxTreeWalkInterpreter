@@ -65,6 +65,5 @@ template <typename T> const T &LoxType::getValue() const {
 
 template <typename T> bool LoxType::isType() const {
   std::type_index template_type = typeid(T);
-
   return template_type == _type;
 }

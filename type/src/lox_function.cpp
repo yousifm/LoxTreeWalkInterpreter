@@ -14,7 +14,7 @@ LoxType LoxFunction::call(Interpreter *interpreter,
   }
   
   try {
-    interpreter->executeBlock(std::make_shared<Environment>(_closure), _declaration.body());
+    interpreter->executeBlock(std::make_shared<Environment>(std::make_shared<Environment>(_closure)), _declaration.body());
   } catch (Return r) {
     return r.value();
   }
@@ -25,3 +25,11 @@ LoxType LoxFunction::call(Interpreter *interpreter,
 size_t LoxFunction::arity() const {
   return _declaration.params().size();
 }
+
+LoxFunction* LoxFunction::bind(LoxInstance* instance) {
+  LoxFunction* func  = new LoxFunction(_declaration, std::make_shared<Environment>(_closure));
+  func->_closure.define("this", instance);
+  
+  return func;
+}
+

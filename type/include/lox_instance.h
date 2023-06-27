@@ -10,7 +10,7 @@ class LoxInstance {
 public:
   LoxInstance(LoxClass*);
   
-  const LoxType get(Token) const;
+  const LoxType get(Token);
   
   void set(Token, LoxType);
 

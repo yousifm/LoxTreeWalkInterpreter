@@ -60,9 +60,15 @@ void Resolver::visitClassStmt(const Stmt::ClassStmt *stmt) {
   declare(stmt->name());
   define(stmt->name());
 
+  beginScope();
+
+  _scopes.back()["this"] =  true;
+
   for (Stmt::FunctionStmt* method : stmt->methods()) {
     resolveFunction(method, FunctionType::METHOD);
   } 
+
+  endScope();
 }
 
 void Resolver::visitBinary(const Expr::BinaryExpr *expr) {
@@ -121,6 +127,10 @@ void Resolver::visitGet(const Expr::GetExpr* expr) {
 void Resolver::visitSet(const Expr::SetExpr* expr) {
   resolve(expr->object());
   resolve(expr->value());
+}
+
+void Resolver::visitThis(const Expr::ThisExpr* expr) {
+  resolveLocal(expr, expr->keyword());
 }
 
 void Resolver::resolve(const std::vector<Stmt::Stmt *> &statements) {
