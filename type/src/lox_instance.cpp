@@ -13,6 +13,9 @@ const LoxType LoxInstance::get(Token name) {
   
   std::optional<LoxFunction> method_opt = _loxClass->getMethod(name.lexeme());
   if (method_opt.has_value()) {
+    if (name.lexeme() == "init") 
+      throw RuntimeError(name, "Cannot access class's initializer");
+
     return LoxType(method_opt.value().bind(this));
   }
 

@@ -14,11 +14,11 @@ public:
       : _name(name), _methods(std::move(methods)) {}
 
   LoxType call(Interpreter *, const std::vector<LoxType> &) override;
-  size_t arity() const override { return 0; }
+  size_t arity() const override;
 
   const std::string &name();
 
-  std::optional<LoxFunction> getMethod(const std::string &);
+  std::optional<LoxFunction> getMethod(const std::string &) const;
 
 private:
   std::string _name;

@@ -52,14 +52,19 @@ void Resolver::visitFunctionStmt(const Stmt::FunctionStmt *stmt) {
 }
 
 void Resolver::visitReturnStmt(const Stmt::ReturnStmt *stmt) {
-  if (stmt->expr() != nullptr)
+  if (stmt->expr() != nullptr) {
+    if (_currentFunction == FunctionType::INITIALIZER) {
+      Lox::runtime_error(RuntimeError(
+          stmt->ret(), "Can't return a value from an initializer."));
+    }
     resolve(stmt->expr());
+  }
 }
 
 void Resolver::visitClassStmt(const Stmt::ClassStmt *stmt) {
-  ClassType enclosingClass = currentClass;
+  ClassType enclosingClass = _currentClass;
 
-  currentClass = ClassType::LoxClass;
+  _currentClass = ClassType::LOX_CLASS;
 
   declare(stmt->name());
   define(stmt->name());
@@ -69,12 +74,17 @@ void Resolver::visitClassStmt(const Stmt::ClassStmt *stmt) {
   _scopes.back()["this"] = true;
 
   for (Stmt::FunctionStmt *method : stmt->methods()) {
-    resolveFunction(method, FunctionType::METHOD);
+    FunctionType funType = FunctionType::METHOD;
+
+    if (method->name().lexeme() == "init")
+      funType = FunctionType::INITIALIZER;
+
+    resolveFunction(method, funType);
   }
 
   endScope();
 
-  currentClass = enclosingClass;
+  _currentClass = enclosingClass;
 }
 
 void Resolver::visitBinary(const Expr::BinaryExpr *expr) {
@@ -134,7 +144,7 @@ void Resolver::visitSet(const Expr::SetExpr *expr) {
 }
 
 void Resolver::visitThis(const Expr::ThisExpr *expr) {
-  if (currentClass == ClassType::NONE) {
+  if (_currentClass == ClassType::CLASS_NONE) {
     Lox::runtime_error(RuntimeError(
         expr->keyword(), "Can't use 'this' keyword outside of a class."));
   }
@@ -170,6 +180,10 @@ void Resolver::resolveLocal(const Expr::Expr *expr, const Token &name) {
 
 void Resolver::resolveFunction(const Stmt::FunctionStmt *stmt,
                                FunctionType type) {
+
+  FunctionType prevFunction = _currentFunction;
+  _currentFunction = type;
+
   beginScope();
 
   for (const Token &param : stmt->params()) {
@@ -178,8 +192,9 @@ void Resolver::resolveFunction(const Stmt::FunctionStmt *stmt,
   }
 
   resolve(stmt->body());
-
   endScope();
+
+  _currentFunction = prevFunction;
 }
 
 void Resolver::declare(const Token &name) {

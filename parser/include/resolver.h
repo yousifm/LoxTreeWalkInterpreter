@@ -11,8 +11,8 @@
 #include <unordered_map>
 
 enum ClassType {
-  NONE,
-  LoxClass
+  CLASS_NONE,
+  LOX_CLASS
 };
 
 class Resolver : public Expr::ExprVisitor, public Stmt::StmtVisitor {
@@ -61,5 +61,6 @@ private:
   Interpreter &_interpreter;
   std::deque<std::unordered_map<std::string, bool>> _scopes;
   
-  ClassType currentClass = ClassType::NONE;
+  ClassType _currentClass = ClassType::CLASS_NONE;
+  FunctionType _currentFunction = FunctionType::FUNCTION_NONE;
 };

@@ -1,5 +1,6 @@
 enum FunctionType {
+  FUNCTION_NONE,
   FUNCTION,
-  METHOD,
-  CONSTRUCTOR
+  INITIALIZER,
+  METHOD
 };
