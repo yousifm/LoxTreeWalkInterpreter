@@ -57,18 +57,24 @@ void Resolver::visitReturnStmt(const Stmt::ReturnStmt *stmt) {
 }
 
 void Resolver::visitClassStmt(const Stmt::ClassStmt *stmt) {
+  ClassType enclosingClass = currentClass;
+
+  currentClass = ClassType::LoxClass;
+
   declare(stmt->name());
   define(stmt->name());
 
   beginScope();
 
-  _scopes.back()["this"] =  true;
+  _scopes.back()["this"] = true;
 
-  for (Stmt::FunctionStmt* method : stmt->methods()) {
+  for (Stmt::FunctionStmt *method : stmt->methods()) {
     resolveFunction(method, FunctionType::METHOD);
-  } 
+  }
 
   endScope();
+
+  currentClass = enclosingClass;
 }
 
 void Resolver::visitBinary(const Expr::BinaryExpr *expr) {
@@ -120,16 +126,18 @@ void Resolver::visitCall(const Expr::CallExpr *expr) {
   }
 }
 
-void Resolver::visitGet(const Expr::GetExpr* expr) {
-  resolve(expr->object());
-}
+void Resolver::visitGet(const Expr::GetExpr *expr) { resolve(expr->object()); }
 
-void Resolver::visitSet(const Expr::SetExpr* expr) {
+void Resolver::visitSet(const Expr::SetExpr *expr) {
   resolve(expr->object());
   resolve(expr->value());
 }
 
-void Resolver::visitThis(const Expr::ThisExpr* expr) {
+void Resolver::visitThis(const Expr::ThisExpr *expr) {
+  if (currentClass == ClassType::NONE) {
+    Lox::runtime_error(RuntimeError(
+        expr->keyword(), "Can't use 'this' keyword outside of a class."));
+  }
   resolveLocal(expr, expr->keyword());
 }
 
@@ -160,7 +168,8 @@ void Resolver::resolveLocal(const Expr::Expr *expr, const Token &name) {
   }
 }
 
-void Resolver::resolveFunction(const Stmt::FunctionStmt *stmt, FunctionType type) {
+void Resolver::resolveFunction(const Stmt::FunctionStmt *stmt,
+                               FunctionType type) {
   beginScope();
 
   for (const Token &param : stmt->params()) {

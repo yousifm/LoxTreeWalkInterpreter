@@ -10,6 +10,11 @@
 #include <string>
 #include <unordered_map>
 
+enum ClassType {
+  NONE,
+  LoxClass
+};
+
 class Resolver : public Expr::ExprVisitor, public Stmt::StmtVisitor {
 public:
   Resolver(Interpreter &);
@@ -55,4 +60,6 @@ private:
 
   Interpreter &_interpreter;
   std::deque<std::unordered_map<std::string, bool>> _scopes;
+  
+  ClassType currentClass = ClassType::NONE;
 };
