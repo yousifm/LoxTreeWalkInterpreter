@@ -13,29 +13,29 @@
 
 void Lox::runFile(const std::string &path) {
   std::string content = readFile(path);
-  run(content);
+  run(content, false);
 }
 
 void Lox::runPrompt() {
   std::string line;
 
-  for (;;) {
+  while (true) {
     line.clear();
 
     std::cout << "> ";
     std::getline(std::cin, line);
 
-    run(line);
+    run(line, true);
   }
 }
 
-void Lox::run(const std::string &source) {
+void Lox::run(const std::string &source, bool is_repl) {
   hadError = false;
 
   Tokenizer tokenizer{source};
   std::vector<Token> tokens = tokenizer.getTokens();
 
-  Parser parser{std::move(tokens)};
+  Parser parser{tokens, is_repl};
   const std::vector<Stmt::Stmt *> statements = parser.parse();
   
   if (hadError)

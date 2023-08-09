@@ -27,7 +27,7 @@ std::vector<Token> Tokenizer::getTokens() {
       tokens.emplace_back(std::move(token.value()));
   }
 
-  tokens.emplace_back(Token{END_OF_FILE, "", std::monostate(), _line});
+  tokens.emplace_back(END_OF_FILE, "", std::monostate(), _line);
 
   return tokens;
 }
@@ -125,7 +125,7 @@ std::optional<Token> Tokenizer::getToken() {
 
 Token Tokenizer::makeToken(TOKEN_TYPE type, LoxType literal) {
   std::string text = _source.substr(_start, _current - _start);
-  return Token{type, text, std::move(literal), _line};
+  return Token{type, text, literal, _line};
 }
 
 bool Tokenizer::isEnd() { return _current >= _source.size(); }
@@ -213,7 +213,7 @@ std::optional<Token> Tokenizer::handleIdentifier() {
   else if (type == TRUE)
     literal = true;
 
-  return makeToken(type, std::move(literal));
+  return makeToken(type, literal);
 }
 
 void Tokenizer::handleMultilineComment() {

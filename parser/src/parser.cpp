@@ -4,15 +4,15 @@
 #include "token_type.h"
 
 Parser::Parser(std::vector<Token> tokens) : _tokens(std::move(tokens)) {}
+Parser::Parser(std::vector<Token> tokens, bool is_repl) : _tokens(std::move(tokens)), _is_repl(is_repl) {}
 
 std::vector<Stmt::Stmt *> Parser::parse() {
   std::vector<Stmt::Stmt *> statements;
 
-  try {
-    while (!isEnd()) {
-      statements.push_back(declaration());
-    }
-  } catch (Exception) {
+  while (!isEnd()) {
+    Stmt::Stmt* decl = declaration();
+    if (decl != nullptr)
+      statements.push_back(decl);
   }
 
   return statements;
@@ -28,7 +28,7 @@ Stmt::Stmt *Parser::declaration() {
       return funDeclaration();
 
     return statement();
-  } catch (Exception error) {
+  } catch (Exception& error) {
     synchronize();
     return nullptr;
   }
@@ -105,8 +105,16 @@ Stmt::Stmt *Parser::printStatement() {
 
 Stmt::Stmt *Parser::expressionStatement() {
   Expr::Expr *expr = expression();
-  consume(SEMICOLON, "Expected ';' after expression.");
-  return new Stmt::ExprStmt(expr);
+  Token next_token = peek();
+
+  if (next_token.type() == TOKEN_TYPE::SEMICOLON) {
+    advance();
+    return new Stmt::ExprStmt(expr);
+  } else if (_is_repl) {
+    return new Stmt::PrintStmt(expr);
+  }
+
+  throw error(next_token, "Expected ';' after expression.");
 }
 
 std::vector<const Stmt::Stmt *> Parser::block() {
@@ -187,7 +195,7 @@ Expr::Expr *Parser::assignment() {
   if (advanceIfMatch({EQUAL})) {
     Token equals = previous();
     Expr::Expr *value = assignment();
-  
+
     Expr::VariableExpr* variable_ptr = dynamic_cast<Expr::VariableExpr*>(expr);
     Expr::GetExpr* get_ptr = dynamic_cast<Expr::GetExpr*>(expr);
 
@@ -390,17 +398,17 @@ void Parser::synchronize() {
       return;
 
     switch (peek().type()) {
-    case CLASS:
-    case FUN:
-    case VAR:
-    case FOR:
-    case IF:
-    case WHILE:
-    case PRINT:
-    case RETURN:
-      return;
-    default:
-      continue;
+      case CLASS:
+      case FUN:
+      case VAR:
+      case FOR:
+      case IF:
+      case WHILE:
+      case PRINT:
+      case RETURN:
+        return;
+      default:
+        continue;
     }
 
     advance();

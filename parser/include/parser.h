@@ -12,6 +12,7 @@ public:
   };
 
   Parser(std::vector<Token>);
+  Parser(std::vector<Token>, bool);
 
   std::vector<Stmt::Stmt *> parse();
 
@@ -55,5 +56,6 @@ private:
   Exception error(Token, const std::string &);
 
   int _current = 0;
+  bool _is_repl = false;
   std::vector<Token> _tokens;
 };
